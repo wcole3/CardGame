@@ -12,14 +12,14 @@ A card should have suite and value
 
 class Card:
     
-    def __init__(self, value : float, suite : str, name : str):
+    def __init__(self, values : list, suite : str, name : str):
         '''
         Construct a card object
 
         Parameters
         ----------
-        value : float
-            The value of the card.
+        value : list
+            The possible values of the card.
         suite : str
             The suite of the card.
         name : str
@@ -30,14 +30,18 @@ class Card:
         None.
 
         '''
-        self.value = value
+        self.values = values
         self.suite = suite
         self.name = name
         self.fullName = self.name + " of " + self.suite
     
     
-    def getValue(self):
-        return self.value
+    def getValues(self):
+        try:
+            self.sort()
+        except AttributeError:
+            return self.values
+        return self.values
     
     def getSuite(self):
         return self.suite
