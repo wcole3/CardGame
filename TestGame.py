@@ -31,5 +31,4 @@ deck.shuffle()
 
 deck.printDeck()
 
-strat = Strategy("", Player())
-strat.getPlay(9.0)
+player = Player("Timmy")

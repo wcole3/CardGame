@@ -9,13 +9,15 @@ the strategy to play their hand.
 @author: wcole
 """
 
+from Strategy import Strategy
 
 class Player:
     
     
-    def __init__(self, hand : list = []):
+    def __init__(self, name : str, hand : list = [], strat : Strategy = None):
+        self.name = name
         self.hand = hand
-        
+        self.strat = strat
         print("Created player")
         
     def play():

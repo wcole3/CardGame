@@ -10,8 +10,6 @@ round.
 """
 
 from Card import Card
-from Player import Player
-import weakref
 
 class Strategy:
     #The idea is to have this be a series of logical statements whcih control
@@ -19,17 +17,12 @@ class Strategy:
     #For example, in blackjack the dealer strategy would be to hit until >=17,
     #then stand.
     
-    def __init__(self, ruleFile, player : Player = None):
+    def __init__(self, ruleFile):
         #I guess have an xml file that defines the rules for the strategy
         self.file = ruleFile
-        self.player = player
         
-    def getPlay(self, currentScore : float, knownCards : list=[]):
-        #checks the current score and known cards against the rules
-        print("Current Score = " + str(currentScore) )
-        
-    def setPlayer(self, player : Player):
-        self.player = weakref.ref(player)
-    
-    def getPlayer(self):
-        return self.player
+    def getPlay(self, hand : list = [], knownCards : list=[]):
+        #checks the current hand and known cards against the rules
+        print("Current Hand: " + str(hand))
+        print("Boardstate: " + str(knownCards))
+
