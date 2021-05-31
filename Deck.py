@@ -35,3 +35,9 @@ class Deck:
     def printDeck(self):
         for card in self.cards:
             print(card.getFullName())
+    
+    def discard(self, card : Card):
+        self.cards.appendleft(card)
+        
+    def count(self):
+        return len(self.cards)

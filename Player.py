@@ -20,8 +20,12 @@ class Player:
         self.strat = strat
         print("Created player")
         
-    def play():
+    def play(self):
         print("play")
+        self.strat.getPlay(self.hand, self.knownCards)
+        
+    def readGame(self, known):
+        self.knownCards = known
         
         
 

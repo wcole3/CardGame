@@ -38,7 +38,7 @@ class Card:
     
     def getValues(self):
         try:
-            self.sort()
+            self.values = sorted(self.values, key=int, reverse=True)
         except AttributeError:
             return self.values
         return self.values

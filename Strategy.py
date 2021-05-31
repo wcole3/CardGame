@@ -8,8 +8,10 @@ round.
 
 @author: wcole
 """
+import CardGameUtils as util
 
 from Card import Card
+from Game import MAX_SCORE
 
 class Strategy:
     #The idea is to have this be a series of logical statements whcih control
@@ -23,6 +25,18 @@ class Strategy:
         
     def getPlay(self, hand : list = [], knownCards : list=[]):
         #checks the current hand and known cards against the rules
-        print("Current Hand: " + str(hand))
-        print("Boardstate: " + str(knownCards))
-
+        print("Current Hand: " + str([card.getFullName() for card in hand]))
+        print("Boardstate: " + str([card.getFullName() for card in knownCards]))
+        print("Score: ", self.getValue(hand))
+        #todo logic to do things
+        
+    #gets the max value of the hand
+    def getValue(self, hand : list = []):
+        scores = sorted(util.getHandValues(hand), key=int, reverse=True)
+        print(scores)
+        for score in scores:
+            if score <= MAX_SCORE:
+                return score
+        #all scores bust
+        return -1
+        

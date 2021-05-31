@@ -10,6 +10,8 @@ Some utility functions to help out
 
 import xml.etree.ElementTree as ET
 import os
+import itertools as it
+
 
 
 def getDeckFromXML(xmlFile):
@@ -35,3 +37,14 @@ def getDeckFromXML(xmlFile):
         return suites, nameValDict
     else:
         raise FileNotFoundError("Deck xml file not found at path: " + xmlFile)
+        
+def getHandValues(hand : list = []):
+    cardValues = []
+    for card in hand:
+        cardValues.append(card.getValues())
+    combs = list(it.product(*cardValues))
+    print(combs)
+    scores = []
+    for o in combs:
+        scores.append(sum(o))
+    return scores

@@ -6,9 +6,6 @@
 		<Suite name="Spades"/>
 	</Suites>
 	<Names>
-		<Name name="One">
-			<Value>1</Value>
-		</Name>
 		<Name name="Two">
 			<Value>2</Value>
 		</Name>
