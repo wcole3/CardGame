@@ -10,6 +10,7 @@ the strategy to play their hand.
 """
 
 from Strategy import Strategy
+from Card import Card
 
 class Player:
     
@@ -22,10 +23,14 @@ class Player:
         
     def play(self):
         print("play")
-        self.strat.getPlay(self.hand, self.knownCards)
+        return self.strat.getPlay(self.hand, self.knownCards)
         
     def readGame(self, known):
         self.knownCards = known
+        
+    def drawCard(self, card : Card = None):
+        self.hand.append(card)
+        
         
         
 

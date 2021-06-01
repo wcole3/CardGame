@@ -9,9 +9,10 @@ round.
 @author: wcole
 """
 import CardGameUtils as util
+import Game
 
 from Card import Card
-from Game import MAX_SCORE
+
 
 class Strategy:
     #The idea is to have this be a series of logical statements whcih control
@@ -27,16 +28,23 @@ class Strategy:
         #checks the current hand and known cards against the rules
         print("Current Hand: " + str([card.getFullName() for card in hand]))
         print("Boardstate: " + str([card.getFullName() for card in knownCards]))
-        print("Score: ", self.getValue(hand))
+        score = self.getValue(hand)
+        print("Score: ", score)
         #todo logic to do things
+        if score > Game.MAX_SCORE:
+            return Game.BUST
+        elif score < 17:
+            return Game.HIT
+        else:
+            return Game.STAND
         
     #gets the max value of the hand
     def getValue(self, hand : list = []):
         scores = sorted(util.getHandValues(hand), key=int, reverse=True)
         print(scores)
         for score in scores:
-            if score <= MAX_SCORE:
+            if score <= Game.MAX_SCORE:
                 return score
         #all scores bust
-        return -1
+        return Game.BUST
         

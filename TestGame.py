@@ -31,7 +31,7 @@ deck.shuffle()
 
 player = Player("Timmy")
 
-strat = Strategy("")
+strat = Strategy(None)
 
 player.strat = strat
 
@@ -40,9 +40,9 @@ hand = [deck.drawCard(), deck.drawCard(), deck.drawCard()]
 known = [deck.drawCard()]
 
 player.hand = hand
-player.knownCards = known
+player.readGame(known)
 
-player.play()
+print("Action= ", player.play())
 
 for card in hand:
     deck.discard(card)
