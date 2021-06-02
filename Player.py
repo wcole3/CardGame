@@ -12,6 +12,8 @@ the strategy to play their hand.
 from Strategy import Strategy
 from Card import Card
 
+DEBUG = True
+
 class Player:
     
     
@@ -19,10 +21,10 @@ class Player:
         self.name = name
         self.hand = hand
         self.strat = strat
-        print("Created player")
+        if(DEBUG): print("Created player")
         
     def play(self):
-        print("play")
+        if(DEBUG): print(self.name, " playing")
         return self.strat.getPlay(self.hand, self.knownCards)
         
     def readGame(self, known):
@@ -30,6 +32,9 @@ class Player:
         
     def drawCard(self, card : Card = None):
         self.hand.append(card)
+        
+    def getScore(self):
+        return self.strat.getScore()
         
         
         

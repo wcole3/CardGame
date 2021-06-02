@@ -9,10 +9,11 @@ round.
 @author: wcole
 """
 import CardGameUtils as util
-import Game
+import GameConstants as gc
 
 from Card import Card
 
+DEBUG = True
 
 class Strategy:
     #The idea is to have this be a series of logical statements whcih control
@@ -23,28 +24,32 @@ class Strategy:
     def __init__(self, ruleFile):
         #I guess have an xml file that defines the rules for the strategy
         self.file = ruleFile
+        self.score = 0
         
     def getPlay(self, hand : list = [], knownCards : list=[]):
         #checks the current hand and known cards against the rules
-        print("Current Hand: " + str([card.getFullName() for card in hand]))
-        print("Boardstate: " + str([card.getFullName() for card in knownCards]))
-        score = self.getValue(hand)
-        print("Score: ", score)
+        if(DEBUG): print("Current Hand: " + str([card.getFullName() for card in hand]))
+        if(DEBUG): print("Boardstate: " + str([card.getFullName() for card in knownCards]))
+        self.score = self.getValue(hand)
+        if(DEBUG): print("Score: ", self.score)
         #todo logic to do things
-        if score > Game.MAX_SCORE:
-            return Game.BUST
-        elif score < 17:
-            return Game.HIT
+        if self.score > gc.MAX_SCORE:
+            return gc.BUST
+        elif self.score < 17:
+            return gc.HIT
         else:
-            return Game.STAND
+            return gc.STAND
         
     #gets the max value of the hand
     def getValue(self, hand : list = []):
         scores = sorted(util.getHandValues(hand), key=int, reverse=True)
-        print(scores)
+        if(DEBUG): print(scores)
         for score in scores:
-            if score <= Game.MAX_SCORE:
+            if score <= gc.MAX_SCORE:
                 return score
         #all scores bust
-        return Game.BUST
+        return gc.BUST
+    
+    def getScore(self):
+        return self.score
         

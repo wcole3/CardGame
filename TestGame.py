@@ -35,7 +35,7 @@ strat = Strategy(None)
 
 player.strat = strat
 
-hand = [deck.drawCard(), deck.drawCard(), deck.drawCard()]
+hand = [deck.drawCard(), deck.drawCard()]
 
 known = [deck.drawCard()]
 

@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import os
 import itertools as it
 
-
+DEBUG = True
 
 def getDeckFromXML(xmlFile):
     #check if file exists
@@ -43,7 +43,7 @@ def getHandValues(hand : list = []):
     for card in hand:
         cardValues.append(card.getValues())
     combs = list(it.product(*cardValues))
-    print(combs)
+    if(DEBUG): print(combs)
     scores = []
     for o in combs:
         scores.append(sum(o))
