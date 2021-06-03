@@ -11,8 +11,9 @@ Some utility functions to help out
 import xml.etree.ElementTree as ET
 import os
 import itertools as it
+import GameConstants as gc
 
-DEBUG = True
+DEBUG = gc.DEBUG
 
 def getDeckFromXML(xmlFile):
     #check if file exists

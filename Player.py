@@ -11,8 +11,9 @@ the strategy to play their hand.
 
 from Strategy import Strategy
 from Card import Card
+import GameConstants as gc
 
-DEBUG = True
+DEBUG = gc.DEBUG
 
 class Player:
     
@@ -21,6 +22,9 @@ class Player:
         self.name = name
         self.hand = hand
         self.strat = strat
+        self.wins = 0
+        self.ties = 0
+        self.losses = 0
         if(DEBUG): print("Created player")
         
     def play(self):

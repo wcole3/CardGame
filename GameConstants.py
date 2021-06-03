@@ -7,6 +7,9 @@ Constants for the game, eventually this should be moved to a file or something
 @author: William_Cole
 """
 
+#Debug flag
+DEBUG = True
+
 #Rule statics
 MAX_SCORE = 21
 

@@ -13,7 +13,7 @@ import GameConstants as gc
 
 from Card import Card
 
-DEBUG = True
+DEBUG = gc.DEBUG
 
 class Strategy:
     #The idea is to have this be a series of logical statements whcih control
@@ -34,6 +34,7 @@ class Strategy:
         if(DEBUG): print("Score: ", self.score)
         #todo logic to do things
         if self.score > gc.MAX_SCORE:
+            self.score = 0
             return gc.BUST
         elif self.score < 17:
             return gc.HIT
