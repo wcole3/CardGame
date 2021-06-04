@@ -7,6 +7,8 @@ Testing area
 
 @author: wcole
 """
+import sys
+sys.path.insert(0,'..')
 
 from Card import Card
 from Deck import Deck
@@ -23,7 +25,7 @@ cardAce = Card([1,11], "Hearts", "Ace")
          "Eight" : 8, "Nine" : 9, "Ten" : 10, "Jack" : 10, "Queen" : 10, "King" : 10, "Ace" : [1, 11]}'''
     
 
-suites, nameValDict = util.getDeckFromXML("./Decks/TradDeck.xml")
+suites, nameValDict = util.getDeckFromXML("../../Decks/TradDeck.xml")
 
 deck = Deck(suites, nameValDict)
 
