@@ -23,6 +23,8 @@ KNOWNCARDS = []
 
 RESULT_DICT = {}
 
+DEALER_SHOWN = None
+
 def initResultDict():
     #Setup the dict used to accumulate the results of the sim
     RESULT_DICT = dict()
@@ -46,6 +48,7 @@ def dealOpeningHands(players : list = [], dealer : Player = None, deck : Deck = 
         dealer.drawCard(card)
         if i != 0:
             KNOWNCARDS.append(card)
+            DEALER_SHOWN = card
             
 def getResults(players : list, dealer : Player):
     winners = 0
@@ -118,7 +121,7 @@ if __name__ == "__main__":
     numberOfplayers = DEFAULT_NoPlayers
     print("running sim")
     #get the deck
-    suites, valDict = util.getDeckFromXML("./Decks/TradDeck.xml")
+    suites, valDict = util.getDeckFromXML("../Decks/TradDeck.xml")
     deck = Deck(suites, valDict)
     #setup players
     strats = []
