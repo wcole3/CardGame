@@ -35,3 +35,16 @@ class Deck:
     def printDeck(self):
         for card in self.cards:
             print(card.getFullName())
+    
+    def discard(self, card : Card):
+        self.cards.appendleft(card)
+        
+    def count(self):
+        return len(self.cards)
+    
+    def getCard(self, suite : str, name : str):
+        for card in self.cards:
+            if card.suite == suite and card.name == name:
+                return card
+        return None
+        
