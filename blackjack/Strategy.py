@@ -10,6 +10,7 @@ round.
 """
 import CardGameUtils as util
 import GameConstants as gc
+import random
 
 from Card import Card
 
@@ -23,25 +24,32 @@ class Strategy:
     
     def __init__(self, ruleFile):
         #I guess have an xml file that defines the rules for the strategy
-        self.file = ruleFile
+        if ruleFile == None:
+            self.file = "Dealer"
+        else:
+            self.file = ruleFile
         self.score = 0
         
-    def getPlay(self, hand : list = [], knownCards : list=[]):
+    def getPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None):
         #checks the current hand and known cards against the rules
         if(DEBUG): print("Current Hand: " + str([card.getFullName() for card in hand]))
         if(DEBUG): print("Boardstate: " + str([card.getFullName() for card in knownCards]))
+        if(DEBUG): print("Dealer shown card: ", dealerCard.getFullName())
         self.score = self.getValue(hand)
         if(DEBUG): print("Score: ", self.score)
-        #todo logic to do things
+        #check for special strategies
         if self.score > gc.MAX_SCORE:
             self.score = 0
             return gc.BUST
-        elif self.score < 17:
-            return gc.HIT
+        if self.file == "Dealer":
+            return self.getDealerPlay(hand, knownCards, dealerCard)
+        elif self.file == "Random":
+            return random.randint(0, len(gc.AVAIL_ACTIONS))
         else:
             return gc.STAND
         
-    #gets the max value of the hand
+        
+    #gets the max value of the hand below max score or BUST
     def getValue(self, hand : list = []):
         scores = sorted(util.getHandValues(hand), key=int, reverse=True)
         if(DEBUG): print(scores)
@@ -53,4 +61,10 @@ class Strategy:
     
     def getScore(self):
         return self.score
+    
+    def getDealerPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None):
+        if self.score < 17:
+            return gc.HIT
+        else:
+            return gc.STAND
         
