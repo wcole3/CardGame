@@ -10,9 +10,12 @@ round.
 """
 import CardGameUtils as util
 import GameConstants as gc
+import xml.etree.ElementTree as ET
 import random
+import os
 
 from Card import Card
+from Rule import Rule
 
 DEBUG = gc.DEBUG
 
@@ -26,9 +29,14 @@ class Strategy:
         #I guess have an xml file that defines the rules for the strategy
         if ruleFile == None:
             self.file = "Dealer"
+        elif ruleFile == "Random":#Special
+            self.file = "Random"
         else:
             self.file = ruleFile
+            #parse file for rules
+            self.rules = self.parseRuleFile(self.file)
         self.score = 0
+        
         
     def getPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None):
         #checks the current hand and known cards against the rules
@@ -67,4 +75,17 @@ class Strategy:
             return gc.HIT
         else:
             return gc.STAND
+        
+    def parseRuleFile(self, file):
+        self.rules = []
+        if os.path.exists(file):
+            tree = ET.parse(file)
+            root = tree.getroot()
+            self.name = root.get("name")
+            for rule in root.findall("Rule"):
+                self.rules.append(Rule(rule))
+            if len(self.rules) == 0:
+                raise ValueError("No rules defined in strategy file.", file)
+        else:
+            raise FileNotFoundError("Strategy file not found.", file)
         

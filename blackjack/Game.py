@@ -18,10 +18,10 @@ from Player import Player
 
 
 DEBUG = gc.DEBUG
-PLOT = True
+PLOT = False
 
 DEFAULT_HandsPlayed = 1
-DEFAULT_NoPlayers = 5
+DEFAULT_NoPlayers = 1
 DEFAULT_Strategy = Strategy(None)
 DEFAULT_BetSize = 1.5
 DEFAULT_DeckFile = "../Decks/TradDeck.xml"
@@ -149,10 +149,10 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
     strats = []
     betSizes = []
     for i in range(numberOfplayers):
-        strats.append(Strategy("None"))
+        strats.append(Strategy(None))
         betSizes.append(DEFAULT_BetSize)
     players = setupPlayers(numberOfplayers, strats, betSizes) 
-    dealer = Player("Dealer", [], Strategy("Dealer"))
+    dealer = Player("Dealer", [], Strategy("../Strategies/DealerStrategy.xml"))
     RESULT_DICT = initResultDict(players)
     
     #game loop
@@ -187,7 +187,7 @@ if __name__ == "__main__":
         args = parser.parse_args()
         if args is not None:
             print("parse config file and get plot flag")
-    RESULT_DICT = main(20)
+    RESULT_DICT = main(1)
     
     #do plot if desired
     if PLOT:
