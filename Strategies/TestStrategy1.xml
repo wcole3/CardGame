@@ -1,0 +1,16 @@
+<Strategy name="Test1">
+	<Rule true_action="HIT" false_action="NEXT">
+		<Logic operation="AND">
+			<Logic operation="IF" var="SCORE" check="lt" value="16"/>
+			<Logic operation="NOT">
+				<Logic operation="IF" var="DEALERSHOWN" check="gte" value="7"/>
+			</Logic>
+		</Logic>
+	</Rule>
+	<Rule true_action="HIT" false_action="STAND">
+		<Logic operation="OR">
+			<Logic operation="IF" var="SCORE" check="lt" value="11"/>
+			<Logic operation="IF" var="SCORE" check="eq" value="11"/> 
+		</Logic>
+	</Rule>
+</Strategy>

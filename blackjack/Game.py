@@ -149,7 +149,7 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
     strats = []
     betSizes = []
     for i in range(numberOfplayers):
-        strats.append(Strategy(None))
+        strats.append(Strategy("../Strategies/TestStrategy1.xml"))
         betSizes.append(DEFAULT_BetSize)
     players = setupPlayers(numberOfplayers, strats, betSizes) 
     dealer = Player("Dealer", [], Strategy("../Strategies/DealerStrategy.xml"))

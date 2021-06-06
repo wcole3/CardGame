@@ -32,22 +32,39 @@ class Rule:
     
     def __init__(self, root_element):
         if root_element is not None:
-            self.logicStatements = []
             self.true_action = root_element.get(ATTR_TrueAction)
             self.false_action = root_element.get(ATTR_FalseAction)
-            for logic in root_element:
-                self.logicStatements.append(self.parseLogic(logic))
+            self.ruleStatements = self.parseLogic(root_element.find("Logic"))
+            if(DEBUG): print(self.ruleStatements)
         else:
             raise ValueError("Rule cannot be constructed from None-type object")
             
-    def parseLogic(self, logicElement):
+    def parseLogic(self, element):
         #figure out which logic operation
-        op = logicElement.get(ATTR_operation)
+        attrs = []
+        op = element.get(ATTR_operation)
         if op == LOGIC_IF:
-            print("IF")
+            #working logic
+            var = element.get(ATTR_variable)
+            check = element.get(ATTR_check)
+            value = element.get(ATTR_value)
+            attrs = [LOGIC_IF, var, check, value]
         elif op == LOGIC_AND:
-            print("AND")
+            attrs = [LOGIC_AND]
+            children = []
+            for logic in element.findall("Logic"):
+                children.append(self.parseLogic(logic))
+            attrs.append(children)
         elif op == LOGIC_OR:
-            print("OR")
+            attrs = [LOGIC_OR]
+            children = []
+            for logic in element.findall("Logic"):
+                children.append(self.parseLogic(logic))
+            attrs.append(children)
         elif op == LOGIC_NOT:
-            print("NOT")
+            attrs = [LOGIC_NOT, self.parseLogic(element.find("Logic"))]
+        return attrs
+    
+        
+        
+            
