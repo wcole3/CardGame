@@ -7,13 +7,18 @@ Created on Mon May 31 16:51:47 2021
 
 import argparse as ap
 import sys
+import CardGameUtils as util
+import GameConstants as gc
+import matplotlib.pyplot as plt
+import numpy as np
+
 from Deck import Deck
 from Strategy import Strategy
 from Player import Player
-import CardGameUtils as util
-import GameConstants as gc
+
 
 DEBUG = gc.DEBUG
+PLOT = True
 
 DEFAULT_HandsPlayed = 1
 DEFAULT_NoPlayers = 5
@@ -23,19 +28,20 @@ DEFAULT_DeckFile = "../Decks/TradDeck.xml"
 
 KNOWNCARDS = []
 
-RESULT_DICT = {}
-
 #setup argparser
 parser = ap.ArgumentParser(description="Run a blackjack simulation")
 parser.add_argument("-cf", type=str, nargs=1, required=False, help="The configuration file for the simulation")
 
-def initResultDict():
+def initResultDict(players : list = []):
     #Setup the dict used to accumulate the results of the sim
     RESULT_DICT = dict()
     RESULT_DICT['total_wins'] = 0
     RESULT_DICT['total_ties'] = 0
     RESULT_DICT['total_losses'] = 0
     RESULT_DICT['total_winnings'] = 0.0
+    RESULT_DICT['table_history'] = []
+    RESULT_DICT['player_names'] = [player.name for player in players]
+    RESULT_DICT['player_histories'] = [player.winningsHistory for player in players]
     return RESULT_DICT
 
 def setupPlayers(numberOfplayers : int, strats : [], betSizes : list = []):
@@ -143,11 +149,12 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
     strats = []
     betSizes = []
     for i in range(numberOfplayers):
-        strats.append(Strategy(None))
+        strats.append(Strategy("None"))
         betSizes.append(DEFAULT_BetSize)
     players = setupPlayers(numberOfplayers, strats, betSizes) 
     dealer = Player("Dealer", [], Strategy("Dealer"))
-    RESULT_DICT = initResultDict()
+    RESULT_DICT = initResultDict(players)
+    
     #game loop
     game = 0
     while game < loops:
@@ -165,15 +172,35 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
         RESULT_DICT['total_ties'] += tie
         RESULT_DICT['total_losses'] += loss
         RESULT_DICT['total_winnings'] += winnings
+        RESULT_DICT['table_history'].append((RESULT_DICT['total_winnings'], dealer.getScore()))
+        RESULT_DICT['player_histories'] = [player.winningsHistory for player in players]
         cleanupGame(players, dealer, deck, betSizes)
         game+=1
+        
     
     print("sim finished")
     printSummary(RESULT_DICT, players)
+    return RESULT_DICT
     
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         args = parser.parse_args()
         if args is not None:
-            print("parse config file")
-    main()
+            print("parse config file and get plot flag")
+    RESULT_DICT = main(20)
+    
+    #do plot if desired
+    if PLOT:
+        fig, ax = plt.subplots()
+        x = np.linspace(0, len(RESULT_DICT['player_histories'][0]) - 1, len(RESULT_DICT['player_histories'][0]))
+        ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
+        ax.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c='k', label="House", marker=".")
+        i = 0
+        for hist in RESULT_DICT['player_histories']:
+            ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
+            i += 1
+        ax.legend(bbox_to_anchor=(1,1))
+        ax.set_xlabel("Hands played")
+        ax.set_ylabel("Winnings ($)")
+        ax.set_xlim([min(x), max(x)])
+        
