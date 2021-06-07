@@ -34,7 +34,7 @@ class Strategy:
         else:
             self.file = ruleFile
             #parse file for rules
-            self.rules = self.parseRuleFile(self.file)
+            self.parseRuleFile(self.file)
         self.score = 0
         
         

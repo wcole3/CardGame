@@ -65,6 +65,26 @@ class Rule:
             attrs = [LOGIC_NOT, self.parseLogic(element.find("Logic"))]
         return attrs
     
+    def evaluate(self):
+        return self.evaluateRule(self.ruleStatements)
+    
+    def evaluateRule(self, rules):
+        #evaluate the rule and return the true or false action
+        if len(rules) != 0:
+            op = rules[0]
+            if op == LOGIC_IF:
+                return self.evaluateIF(rules)
+            elif op == LOGIC_AND:
+                print('and')
+            elif op == LOGIC_OR:
+                print('or')
+            elif op == LOGIC_NOT:
+                print('Not')
+        else:
+            raise ValueError("No rule statements found for rule")
+            
+    def evaluateIF(self, logic):
+        print("eval_if")
         
         
             
