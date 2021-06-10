@@ -15,7 +15,7 @@ import random
 import os
 
 from Card import Card
-from Rule import Rule
+import Rule
 
 DEBUG = gc.DEBUG
 
@@ -44,6 +44,8 @@ class Strategy:
         if(DEBUG): print("Boardstate: " + str([card.getFullName() for card in knownCards]))
         if(DEBUG): print("Dealer shown card: ", dealerCard.getFullName())
         self.score = self.getValue(hand)
+        self.dealer = dealerCard
+        self.knowncount = self.getKnownCount(knownCards)
         if(DEBUG): print("Score: ", self.score)
         #check for special strategies
         if self.score > gc.MAX_SCORE:
@@ -54,8 +56,11 @@ class Strategy:
         elif self.file == "Random":
             return random.randint(0, len(gc.AVAIL_ACTIONS))
         else:
-            return gc.STAND
+            return self.getPlayFromRules(0)
         
+    def getKnownCount(self, knownCards : list):
+        #TODO
+        return 0
         
     #gets the max value of the hand below max score or BUST
     def getValue(self, hand : list = []):
@@ -76,6 +81,21 @@ class Strategy:
         else:
             return gc.STAND
         
+    def getPlayFromRules(self, ruleNo : int):
+        if self.rules is None or len(self.rules) == 0 or ruleNo >= len(self.rules):
+            return gc.STAND
+        else:
+            action = self.rules[ruleNo].evaluate(self.score, self.dealer, self.knowncount)
+            if action == Rule.ACTION_HIT:
+                return gc.HIT
+            elif action == Rule.ACTION_STAND:
+                return gc.STAND
+            elif action == Rule.ACTION_DOUBLE:
+                return gc.DOUBLEDOWN
+            elif action == Rule.ACTION_NEXTRULE:
+                ruleNo += 1
+                return self.getPlayFromRules(ruleNo)
+        
     def parseRuleFile(self, file):
         self.rules = []
         if os.path.exists(file):
@@ -83,7 +103,7 @@ class Strategy:
             root = tree.getroot()
             self.name = root.get("name")
             for rule in root.findall("Rule"):
-                self.rules.append(Rule(rule))
+                self.rules.append(Rule.Rule(rule))
             if len(self.rules) == 0:
                 raise ValueError("No rules defined in strategy file.", file)
         else:

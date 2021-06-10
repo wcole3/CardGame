@@ -9,6 +9,7 @@ Object repr of rule from xml file
 
 import xml.etree.ElementTree as ET
 import GameConstants as gc
+from Card import Card
 
 DEBUG = gc.DEBUG
 
@@ -27,6 +28,18 @@ LOGIC_NOT = "NOT"
 VAR_Score = "SCORE"
 VAR_DealerShown = "DEALERSHOWN"
 VAR_KNOWNCOUNT = "COUNT"
+
+CHECK_LESSTHAN = "lt"
+CHECK_LESSTHANEQ = "lte"
+CHECK_EQUALS = "eq"
+CHECK_GREATERTHAN = "gt"
+CHECK_GREATERTHANEQ = "gte"
+
+ACTION_HIT = "HIT"
+ACTION_STAND = "STAND"
+ACTION_DOUBLE = "DOUBLEDOWN"
+ACTION_NEXTRULE = "NEXTRULE"
+
 
 class Rule:
     
@@ -65,8 +78,11 @@ class Rule:
             attrs = [LOGIC_NOT, self.parseLogic(element.find("Logic"))]
         return attrs
     
-    def evaluate(self):
-        return self.evaluateRule(self.ruleStatements)
+    def evaluate(self, score : int, dealerCard : Card, count : int):
+        self.score = score
+        self.dealer = dealerCard
+        self.count = count
+        return self.true_action if self.evaluateRule(self.ruleStatements) else self.false_action
     
     def evaluateRule(self, rules):
         #evaluate the rule and return the true or false action
@@ -75,16 +91,47 @@ class Rule:
             if op == LOGIC_IF:
                 return self.evaluateIF(rules)
             elif op == LOGIC_AND:
-                print('and')
+                for rule in rules[1]:
+                    if self.evaluateRule(rule) is False:
+                        return False
+                return True
             elif op == LOGIC_OR:
-                print('or')
+                for rule in rules[1]:
+                    if self.evaluateRule(rule) is True:
+                        return True
+                return False
             elif op == LOGIC_NOT:
-                print('Not')
+                return False if self.evaluateIF(rules[1]) else True
         else:
             raise ValueError("No rule statements found for rule")
             
     def evaluateIF(self, logic):
-        print("eval_if")
+        #Get the value
+        value = int(logic[3])
         
+        #get the variable
+        var = None
+        if logic[1] == VAR_Score:
+            var = self.score
+        elif logic[1] == VAR_DealerShown:
+            var = max(self.dealer.getValues())
+        elif logic[1] == VAR_KNOWNCOUNT:
+            var = self.count
+        else:
+            raise ValueError("Unknown variable type encountered in rule")
+            
+        #Get the operation and evaluate
+        if logic[2] == CHECK_EQUALS:
+            return var == value
+        elif logic[2] == CHECK_GREATERTHAN:
+            return var > value
+        elif logic[2] == CHECK_GREATERTHANEQ:
+            return var >= value
+        elif logic[2] == CHECK_LESSTHAN:
+            return var < value
+        elif logic[2] == CHECK_LESSTHANEQ:
+            return var <= value
+        else:
+            raise ValueError("Unknown check encountered in rule")
         
             
