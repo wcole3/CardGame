@@ -1,5 +1,7 @@
 <Strategy name="Dealer">
-	<Rule true_action="HIT" false_action="STAND">
-		<Logic operation="IF" var="SCORE" check="lt" value='17'/>
-	</Rule>
+	<Rules>
+		<Rule true_action="HIT" false_action="STAND">
+			<Logic operation="IF" var="SCORE" check="lt" value='17'/>
+		</Rule>
+	</Rules>
 </Strategy>

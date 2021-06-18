@@ -102,7 +102,7 @@ class Strategy:
             tree = ET.parse(file)
             root = tree.getroot()
             self.name = root.get("name")
-            for rule in root.findall("Rule"):
+            for rule in root.find('Rules').findall("Rule"):
                 self.rules.append(Rule.Rule(rule))
             if len(self.rules) == 0:
                 raise ValueError("No rules defined in strategy file.", file)

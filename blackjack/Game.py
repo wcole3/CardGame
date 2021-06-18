@@ -18,7 +18,7 @@ from Player import Player
 
 
 DEBUG = gc.DEBUG
-PLOT = False
+PLOT = True
 
 DEFAULT_HandsPlayed = 1
 DEFAULT_NoPlayers = 1
@@ -141,6 +141,8 @@ def printSummary(results : dict, players : list = None):
     
 def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPlayers, deckFile : str = DEFAULT_DeckFile):
     #get game vars; eventually get from file
+    #TODO use config file to do setup
+    
     print("running sim")
     #get the deck
     suites, valDict = util.getDeckFromXML(deckFile)
@@ -149,12 +151,11 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
     strats = []
     betSizes = []
     for i in range(numberOfplayers):
-        strats.append(Strategy("../Strategies/TestStrategy1.xml"))
+        strats.append(Strategy("../Strategies/DealerStrategy.xml"))
         betSizes.append(DEFAULT_BetSize)
     players = setupPlayers(numberOfplayers, strats, betSizes) 
     dealer = Player("Dealer", [], Strategy("../Strategies/DealerStrategy.xml"))
     RESULT_DICT = initResultDict(players)
-    
     #game loop
     game = 0
     while game < loops:
@@ -187,20 +188,32 @@ if __name__ == "__main__":
         args = parser.parse_args()
         if args is not None:
             print("parse config file and get plot flag")
-    RESULT_DICT = main(1)
+    RESULT_DICT = main(10, 5)
     
     #do plot if desired
     if PLOT:
         fig, ax = plt.subplots()
         x = np.linspace(0, len(RESULT_DICT['player_histories'][0]) - 1, len(RESULT_DICT['player_histories'][0]))
         ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
-        ax.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c='k', label="House", marker=".")
+        playerMax = 0
         i = 0
         for hist in RESULT_DICT['player_histories']:
             ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
+            #get player max
+            m = max(map(abs, [entry[0] for entry in hist]))
+            if m >= playerMax:
+                playerMax = m
             i += 1
-        ax.legend(bbox_to_anchor=(1,1))
+        ax2 = ax.twinx()
+        ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c='slategrey', label="House", marker=".")
+        maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
+        ax.set_ylim([-1*playerMax, playerMax])
+        ax2.set_ylim([-1*maxVal, maxVal])
+        ax.legend(loc='upper left', bbox_to_anchor=(0,1))
         ax.set_xlabel("Hands played")
-        ax.set_ylabel("Winnings ($)")
+        ax.set_ylabel("Player Winnings ($)")
+        ax2.set_ylabel("House Winnings ($)", rotation=270, color='slategrey')
+        ax2.tick_params(axis='y', labelcolor='slategrey')
         ax.set_xlim([min(x), max(x)])
+        fig.tight_layout()
         

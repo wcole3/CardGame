@@ -18,7 +18,7 @@ from Strategy import Strategy
 
 class testRule(unittest.TestCase):
     
-    def testDealerRuleParse(self):
+    def testDealerRule(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/DealerStrategy.xml")
@@ -32,7 +32,6 @@ class testRule(unittest.TestCase):
         self.assertEqual(logic[1], Rule.VAR_Score)
         self.assertEqual(logic[2], 'lt')
         self.assertEqual(int(logic[3]), 17)
-        '''
         hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
         action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.HIT)
@@ -45,8 +44,28 @@ class testRule(unittest.TestCase):
         action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.BUST)
         self.assertEqual(strat.getScore(), 0)
-        '''
         
+    def testStratOne(self):
+        suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
+        deck = Deck(suites, namevals)
+        strat = Strategy("../../Strategies/TestStrategy1.xml")
+        self.assertEqual(len(strat.rules), 2)
+        dealerCard = deck.getCard("Hearts", "Ace")
+        hand =[deck.getCard("Clubs", "Two"), deck.getCard("Spades", "Two")]
+        action = strat.getPlay(hand, hand, dealerCard)
+        self.assertEqual(action, gc.DOUBLEDOWN)
+        hand.append(deck.getCard("Diamonds", "Seven"))
+        action = strat.getPlay(hand, hand, dealerCard)
+        self.assertEqual(action, gc.DOUBLEDOWN)
+        hand.append(deck.getCard("Hearts", "Four"))
+        action = strat.getPlay(hand, hand, dealerCard)
+        self.assertEqual(action, gc.STAND)
+        dealerCard = deck.getCard("Spades", "Three")
+        action = strat.getPlay(hand, hand, dealerCard)
+        self.assertEqual(action, gc.HIT)
+        hand.append(deck.getCard("Hearts", "Three"))
+        action = strat.getPlay(hand, hand, dealerCard)
+        self.assertEqual(action, gc.STAND)
         
 if __name__ == "__main__":
     unittest.main()
