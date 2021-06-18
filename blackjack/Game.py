@@ -26,6 +26,8 @@ DEFAULT_Strategy = Strategy(None)
 DEFAULT_BetSize = 1.5
 DEFAULT_DeckFile = "../Decks/TradDeck.xml"
 
+housecolor = 'maroon'
+
 KNOWNCARDS = []
 
 #setup argparser
@@ -48,7 +50,7 @@ def setupPlayers(numberOfplayers : int, strats : [], betSizes : list = []):
     return [Player("Player" + str(i), [], strats[i], betSizes[i]) for i in range(numberOfplayers)]
     
 def dealOpeningHands(players : list = [], dealer : Player = None, deck : Deck = None):
-    deck.shuffle()
+    if deck.noOfDecks == 1: deck.shuffle()
     #deal opening hands
     for i in range(2):
         for player in players:
@@ -140,11 +142,10 @@ def printSummary(results : dict, players : list = None):
             print("\t\tWinnings: ", player.bank)
     
 def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPlayers, deckFile : str = DEFAULT_DeckFile):
-    #get game vars; eventually get from file
-    #TODO use config file to do setup
-    
     print("running sim")
-    #get the deck
+    
+    
+    #TODO use config file to do setup below
     suites, valDict = util.getDeckFromXML(deckFile)
     deck = Deck(suites, valDict)
     #setup players
@@ -155,6 +156,8 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
         betSizes.append(DEFAULT_BetSize)
     players = setupPlayers(numberOfplayers, strats, betSizes) 
     dealer = Player("Dealer", [], Strategy("../Strategies/DealerStrategy.xml"))
+    
+    
     RESULT_DICT = initResultDict(players)
     #game loop
     game = 0
@@ -188,12 +191,12 @@ if __name__ == "__main__":
         args = parser.parse_args()
         if args is not None:
             print("parse config file and get plot flag")
-    RESULT_DICT = main(10, 5)
+    RESULT_DICT = main(100, 5)
     
     #do plot if desired
     if PLOT:
         fig, ax = plt.subplots()
-        x = np.linspace(0, len(RESULT_DICT['player_histories'][0]) - 1, len(RESULT_DICT['player_histories'][0]))
+        x = np.linspace(1, len(RESULT_DICT['player_histories'][0]), len(RESULT_DICT['player_histories'][0]))
         ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
         playerMax = 0
         i = 0
@@ -205,15 +208,15 @@ if __name__ == "__main__":
                 playerMax = m
             i += 1
         ax2 = ax.twinx()
-        ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c='slategrey', label="House", marker=".")
+        ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".")
         maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
         ax.set_ylim([-1*playerMax, playerMax])
         ax2.set_ylim([-1*maxVal, maxVal])
+        ax2.tick_params(axis='y', labelcolor=housecolor)
+        ax.set_xlim([min(x), max(x)])
         ax.legend(loc='upper left', bbox_to_anchor=(0,1))
         ax.set_xlabel("Hands played")
         ax.set_ylabel("Player Winnings ($)")
-        ax2.set_ylabel("House Winnings ($)", rotation=270, color='slategrey')
-        ax2.tick_params(axis='y', labelcolor='slategrey')
-        ax.set_xlim([min(x), max(x)])
+        ax2.set_ylabel("House Winnings ($)", rotation=270, va="center_baseline", color=housecolor)
         fig.tight_layout()
         

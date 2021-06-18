@@ -18,6 +18,7 @@ class Deck:
     
     def __init__(self, suites : list, nameVal : dict, numberOfDecks : int = 1):
         self.cards = deque()
+        self.noOfDecks = numberOfDecks
         #create a card for each suite-name combo
         for i in range(0, numberOfDecks):
             for suite in suites:
