@@ -11,6 +11,7 @@ import CardGameUtils as util
 import GameConstants as gc
 import matplotlib.pyplot as plt
 import numpy as np
+import configparser as cp
 
 from Deck import Deck
 from Strategy import Strategy
@@ -46,8 +47,8 @@ def initResultDict(players : list = []):
     RESULT_DICT['player_histories'] = [player.winningsHistory for player in players]
     return RESULT_DICT
 
-def setupPlayers(numberOfplayers : int, strats : [], betSizes : list = []):
-    return [Player("Player" + str(i), [], strats[i], betSizes[i]) for i in range(numberOfplayers)]
+def setupPlayers(strats : [], betSizes : list = [], names : list = []):
+    return [Player(names[i], [], strats[i], betSizes[i]) for i in range(len(strats))]
     
 def dealOpeningHands(players : list = [], dealer : Player = None, deck : Deck = None):
     if deck.noOfDecks == 1: deck.shuffle()
@@ -141,30 +142,37 @@ def printSummary(results : dict, players : list = None):
             print("\t\tLosses: ", player.losses)
             print("\t\tWinnings: ", player.bank)
     
-def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPlayers, deckFile : str = DEFAULT_DeckFile):
+def main(confFile : cp.ConfigParser = None):
     print("running sim")
     
     
     #TODO use config file to do setup below
-    suites, valDict = util.getDeckFromXML(deckFile)
-    deck = Deck(suites, valDict)
+    suites, valDict = util.getDeckFromXML(confFile.get(gc.GameConst, gc.deck, fallback=DEFAULT_DeckFile).strip())
+    deck = Deck(suites, valDict, int(confFile.get(gc.GameConst, gc.noOfDecks, fallback=1)))
     #setup players
     strats = []
     betSizes = []
-    for i in range(numberOfplayers):
-        strats.append(Strategy("../Strategies/DealerStrategy.xml"))
-        betSizes.append(DEFAULT_BetSize)
-    players = setupPlayers(numberOfplayers, strats, betSizes) 
+    names = []
+    i = 1
+    while(confFile.has_option(gc.PlayerSetup, gc.playerTag+str(i))):
+        playerNo = gc.playerTag+str(i)
+        stratFile = Strategy(confFile.get(gc.PlayerSetup, playerNo).split(",")[1])
+        betSize = float(confFile.get(gc.PlayerSetup, playerNo).split(",")[2])
+        name = confFile.get(gc.PlayerSetup, playerNo).split(",")[0]
+        names.append(name)
+        strats.append(stratFile)
+        betSizes.append(betSize)
+        i += 1
+    players = setupPlayers(strats, betSizes, names) 
     dealer = Player("Dealer", [], Strategy("../Strategies/DealerStrategy.xml"))
-    
     
     RESULT_DICT = initResultDict(players)
     #game loop
     game = 0
-    while game < loops:
+    while game < int(confFile.get(gc.GameConst, gc.handsToPlay, fallback=DEFAULT_HandsPlayed)):
         dealOpeningHands(players, dealer, deck)
         #play game
-        for i in range(numberOfplayers):
+        for i in range(len(players)):
             getPlays(players[i], deck)
         getPlays(dealer, deck)
         #Check results of game
@@ -187,36 +195,46 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
     return RESULT_DICT
     
 if __name__ == "__main__":
+    config = None
     if len(sys.argv) > 1:
         args = parser.parse_args()
         if args is not None:
-            print("parse config file and get plot flag")
-    RESULT_DICT = main(100, 5)
-    
-    #do plot if desired
-    if PLOT:
-        fig, ax = plt.subplots()
-        x = np.linspace(1, len(RESULT_DICT['player_histories'][0]), len(RESULT_DICT['player_histories'][0]))
-        ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
-        playerMax = 0
-        i = 0
-        for hist in RESULT_DICT['player_histories']:
-            ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
-            #get player max
-            m = max(map(abs, [entry[0] for entry in hist]))
-            if m >= playerMax:
-                playerMax = m
-            i += 1
-        ax2 = ax.twinx()
-        ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".")
-        maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
-        ax.set_ylim([-1*playerMax, playerMax])
-        ax2.set_ylim([-1*maxVal, maxVal])
-        ax2.tick_params(axis='y', labelcolor=housecolor)
-        ax.set_xlim([min(x), max(x)])
-        ax.legend(loc='upper left', bbox_to_anchor=(0,1))
-        ax.set_xlabel("Hands played")
-        ax.set_ylabel("Player Winnings ($)")
-        ax2.set_ylabel("House Winnings ($)", rotation=270, va="center_baseline", color=housecolor)
-        fig.tight_layout()
+            config = util.parseConfig(args[0])
+    else:
+        config = util.parseConfig("../Config/Default.txt")
+    if config is not None:
+        PLOT = config[gc.OutputOptions][gc.plotOutput].lower() == "true"
+        SAVE = config[gc.OutputOptions][gc.saveOutput].lower() == "true"
+        RESULT_DICT = main(config)
+        
+        #do plot if desired
+        if PLOT:
+            fig, ax = plt.subplots()
+            x = np.linspace(1, len(RESULT_DICT['player_histories'][0]), len(RESULT_DICT['player_histories'][0]))
+            ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
+            playerMax = 0
+            i = 0
+            for hist in RESULT_DICT['player_histories']:
+                ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
+                #get player max
+                m = max(map(abs, [entry[0] for entry in hist]))
+                if m >= playerMax:
+                    playerMax = m
+                i += 1
+            ax2 = ax.twinx()
+            ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".")
+            maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
+            ax.set_ylim([-1*playerMax, playerMax])
+            ax2.set_ylim([-1*maxVal, maxVal])
+            ax2.tick_params(axis='y', labelcolor=housecolor)
+            ax.set_xlim([min(x), max(x)])
+            ax.legend(loc='upper left', bbox_to_anchor=(0,1))
+            ax.set_xlabel("Hands played")
+            ax.set_ylabel("Player Winnings ($)")
+            ax2.set_ylabel("House Winnings ($)", rotation=270, va="center_baseline", color=housecolor)
+            fig.tight_layout()
+        if SAVE:
+            print("Saving")
+    else:
+        print("Config file could not be openned or is not valid")
         
