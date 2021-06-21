@@ -7,6 +7,7 @@ Created on Mon May 31 16:51:47 2021
 
 import argparse as ap
 import sys
+import os
 import CardGameUtils as util
 import GameConstants as gc
 import matplotlib.pyplot as plt
@@ -20,6 +21,9 @@ from Player import Player
 
 DEBUG = gc.DEBUG
 PLOT = True
+
+RESULT_DIR = "../Results/"
+CONFIG_DIR = "../COnfig/"
 
 DEFAULT_HandsPlayed = 1
 DEFAULT_NoPlayers = 1
@@ -141,12 +145,26 @@ def printSummary(results : dict, players : list = None):
             print("\t\tPushes: ", player.ties)
             print("\t\tLosses: ", player.losses)
             print("\t\tWinnings: ", player.bank)
+            
+def writeResultDict(results : dict, path : str, players : list = None):
+    f = open(path, 'w')
+    f.write("Summary of Simulation")
+    f.write("\nTotal table wins: " + str(results['total_wins']))
+    f.write("\nTotal table pushes: " + str(results['total_ties']))
+    f.write("\nTotal table losses: " + str(results['total_losses']))
+    f.write("\nTable winnings: " + str(results['total_winnings']))
+    if players is not None:
+        f.write("\nPlayer results")
+        for player in players:
+            f.write("\n\t" + str(player.name))
+            f.write("\n\t\tWins: " + str(player.wins))
+            f.write("\n\t\tPushes: " + str(player.ties))
+            f.write("\n\t\tLosses: " + str(player.losses))
+            f.write("\n\t\tWinnings: " + str(player.bank))
+    f.close()
     
 def main(confFile : cp.ConfigParser = None):
     print("running sim")
-    
-    
-    #TODO use config file to do setup below
     suites, valDict = util.getDeckFromXML(confFile.get(gc.GameConst, gc.deck, fallback=DEFAULT_DeckFile).strip())
     deck = Deck(suites, valDict, int(confFile.get(gc.GameConst, gc.noOfDecks, fallback=1)))
     #setup players
@@ -192,20 +210,26 @@ def main(confFile : cp.ConfigParser = None):
     
     print("sim finished")
     printSummary(RESULT_DICT, players)
-    return RESULT_DICT
+    return RESULT_DICT, players
     
 if __name__ == "__main__":
     config = None
+    filename = ""
     if len(sys.argv) > 1:
         args = parser.parse_args()
         if args is not None:
-            config = util.parseConfig(args[0])
+            config = util.parseConfig(CONFIG_DIR + str(args.cf[0]) + ".txt")
+            filename = str(args.cf[0]) + "_results"
+            RESULT_DIR = os.path.join(RESULT_DIR, str(args.cf[0]) + "_results")
     else:
         config = util.parseConfig("../Config/Default.txt")
+        filename = "Default_results"
+        RESULT_DIR = os.path.join(RESULT_DIR, "Default")
+    os.makedirs(RESULT_DIR, exist_ok=True)
     if config is not None:
         PLOT = config[gc.OutputOptions][gc.plotOutput].lower() == "true"
         SAVE = config[gc.OutputOptions][gc.saveOutput].lower() == "true"
-        RESULT_DICT = main(config)
+        RESULT_DICT, players = main(config)
         
         #do plot if desired
         if PLOT:
@@ -228,13 +252,16 @@ if __name__ == "__main__":
             ax2.set_ylim([-1*maxVal, maxVal])
             ax2.tick_params(axis='y', labelcolor=housecolor)
             ax.set_xlim([min(x), max(x)])
-            ax.legend(loc='upper left', bbox_to_anchor=(0,1))
+            ax.legend(loc='upper left', bbox_to_anchor=(0,1)).set_zorder(20)
             ax.set_xlabel("Hands played")
             ax.set_ylabel("Player Winnings ($)")
             ax2.set_ylabel("House Winnings ($)", rotation=270, va="center_baseline", color=housecolor)
+            ax.set_zorder(1)  # default zorder is 0 for ax1 and ax2
+            ax.set_frame_on(False)  # prevents ax1 from hiding ax2
             fig.tight_layout()
-        if SAVE:
-            print("Saving")
+            if SAVE:
+                fig.savefig(os.path.join(RESULT_DIR, filename + ".png"), dpi=400)
+        if SAVE: writeResultDict(RESULT_DICT, os.path.join(RESULT_DIR, filename + ".txt"), players)
     else:
         print("Config file could not be openned or is not valid")
         

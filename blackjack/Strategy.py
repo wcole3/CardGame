@@ -29,7 +29,7 @@ class Strategy:
         #I guess have an xml file that defines the rules for the strategy
         if ruleFile == None:
             self.file = "Dealer"
-        elif ruleFile == "Random":#Special
+        elif ruleFile.lower() == "random":#Special
             self.file = "Random"
         else:
             self.file = ruleFile
