@@ -27,6 +27,7 @@ class Player:
         self.losses = 0
         self.bet = betSize
         self.bank = 0.0
+        self.winningsHistory = []
         if(DEBUG): print("Created player")
         
     def play(self):
@@ -49,13 +50,16 @@ class Player:
     def win(self):
         self.wins += 1
         self.bank += self.bet
+        self.winningsHistory.append((self.bank, self.getScore()))
     
     def push(self):
         self.ties += 1
+        self.winningsHistory.append((self.bank, self.getScore()))
         
     def lose(self):
         self.losses += 1
         self.bank -= self.bet
+        self.winningsHistory.append((self.bank, self.getScore()))
         
         
         

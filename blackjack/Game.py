@@ -7,42 +7,55 @@ Created on Mon May 31 16:51:47 2021
 
 import argparse as ap
 import sys
+import os
+import CardGameUtils as util
+import GameConstants as gc
+import matplotlib.pyplot as plt
+import numpy as np
+import configparser as cp
+
 from Deck import Deck
 from Strategy import Strategy
 from Player import Player
-import CardGameUtils as util
-import GameConstants as gc
+
 
 DEBUG = gc.DEBUG
+PLOT = True
+
+RESULT_DIR = "../Results/"
+CONFIG_DIR = "../COnfig/"
 
 DEFAULT_HandsPlayed = 1
-DEFAULT_NoPlayers = 5
+DEFAULT_NoPlayers = 1
 DEFAULT_Strategy = Strategy(None)
 DEFAULT_BetSize = 1.5
 DEFAULT_DeckFile = "../Decks/TradDeck.xml"
 
-KNOWNCARDS = []
+housecolor = 'maroon'
 
-RESULT_DICT = {}
+KNOWNCARDS = []
 
 #setup argparser
 parser = ap.ArgumentParser(description="Run a blackjack simulation")
 parser.add_argument("-cf", type=str, nargs=1, required=False, help="The configuration file for the simulation")
 
-def initResultDict():
+def initResultDict(players : list = []):
     #Setup the dict used to accumulate the results of the sim
     RESULT_DICT = dict()
     RESULT_DICT['total_wins'] = 0
     RESULT_DICT['total_ties'] = 0
     RESULT_DICT['total_losses'] = 0
     RESULT_DICT['total_winnings'] = 0.0
+    RESULT_DICT['table_history'] = []
+    RESULT_DICT['player_names'] = [player.name for player in players]
+    RESULT_DICT['player_histories'] = [player.winningsHistory for player in players]
     return RESULT_DICT
 
-def setupPlayers(numberOfplayers : int, strats : [], betSizes : list = []):
-    return [Player("Player" + str(i), [], strats[i], betSizes[i]) for i in range(numberOfplayers)]
+def setupPlayers(strats : [], betSizes : list = [], names : list = []):
+    return [Player(names[i], [], strats[i], betSizes[i]) for i in range(len(strats))]
     
 def dealOpeningHands(players : list = [], dealer : Player = None, deck : Deck = None):
-    deck.shuffle()
+    if deck.noOfDecks == 1: deck.shuffle()
     #deal opening hands
     for i in range(2):
         for player in players:
@@ -132,28 +145,52 @@ def printSummary(results : dict, players : list = None):
             print("\t\tPushes: ", player.ties)
             print("\t\tLosses: ", player.losses)
             print("\t\tWinnings: ", player.bank)
+            
+def writeResultDict(results : dict, path : str, players : list = None):
+    f = open(path, 'w')
+    f.write("Summary of Simulation")
+    f.write("\nTotal table wins: " + str(results['total_wins']))
+    f.write("\nTotal table pushes: " + str(results['total_ties']))
+    f.write("\nTotal table losses: " + str(results['total_losses']))
+    f.write("\nTable winnings: " + str(results['total_winnings']))
+    if players is not None:
+        f.write("\nPlayer results")
+        for player in players:
+            f.write("\n\t" + str(player.name))
+            f.write("\n\t\tWins: " + str(player.wins))
+            f.write("\n\t\tPushes: " + str(player.ties))
+            f.write("\n\t\tLosses: " + str(player.losses))
+            f.write("\n\t\tWinnings: " + str(player.bank))
+    f.close()
     
-def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPlayers, deckFile : str = DEFAULT_DeckFile):
-    #get game vars; eventually get from file
+def main(confFile : cp.ConfigParser = None):
     print("running sim")
-    #get the deck
-    suites, valDict = util.getDeckFromXML(deckFile)
-    deck = Deck(suites, valDict)
+    suites, valDict = util.getDeckFromXML(confFile.get(gc.GameConst, gc.deck, fallback=DEFAULT_DeckFile).strip())
+    deck = Deck(suites, valDict, int(confFile.get(gc.GameConst, gc.noOfDecks, fallback=1)))
     #setup players
     strats = []
     betSizes = []
-    for i in range(numberOfplayers):
-        strats.append(Strategy(None))
-        betSizes.append(DEFAULT_BetSize)
-    players = setupPlayers(numberOfplayers, strats, betSizes) 
-    dealer = Player("Dealer", [], Strategy("Dealer"))
-    RESULT_DICT = initResultDict()
+    names = []
+    i = 1
+    while(confFile.has_option(gc.PlayerSetup, gc.playerTag+str(i))):
+        playerNo = gc.playerTag+str(i)
+        stratFile = Strategy(confFile.get(gc.PlayerSetup, playerNo).split(",")[1])
+        betSize = float(confFile.get(gc.PlayerSetup, playerNo).split(",")[2])
+        name = confFile.get(gc.PlayerSetup, playerNo).split(",")[0]
+        names.append(name)
+        strats.append(stratFile)
+        betSizes.append(betSize)
+        i += 1
+    players = setupPlayers(strats, betSizes, names) 
+    dealer = Player("Dealer", [], Strategy("../Strategies/DealerStrategy.xml"))
+    
+    RESULT_DICT = initResultDict(players)
     #game loop
     game = 0
-    while game < loops:
+    while game < int(confFile.get(gc.GameConst, gc.handsToPlay, fallback=DEFAULT_HandsPlayed)):
         dealOpeningHands(players, dealer, deck)
         #play game
-        for i in range(numberOfplayers):
+        for i in range(len(players)):
             getPlays(players[i], deck)
         getPlays(dealer, deck)
         #Check results of game
@@ -165,15 +202,66 @@ def main(loops : int = DEFAULT_HandsPlayed, numberOfplayers : int = DEFAULT_NoPl
         RESULT_DICT['total_ties'] += tie
         RESULT_DICT['total_losses'] += loss
         RESULT_DICT['total_winnings'] += winnings
+        RESULT_DICT['table_history'].append((RESULT_DICT['total_winnings'], dealer.getScore()))
+        RESULT_DICT['player_histories'] = [player.winningsHistory for player in players]
         cleanupGame(players, dealer, deck, betSizes)
         game+=1
+        
     
     print("sim finished")
     printSummary(RESULT_DICT, players)
+    return RESULT_DICT, players
     
 if __name__ == "__main__":
+    config = None
+    filename = ""
     if len(sys.argv) > 1:
         args = parser.parse_args()
         if args is not None:
-            print("parse config file")
-    main()
+            config = util.parseConfig(CONFIG_DIR + str(args.cf[0]) + ".txt")
+            filename = str(args.cf[0]) + "_results"
+            RESULT_DIR = os.path.join(RESULT_DIR, str(args.cf[0]) + "_results")
+    else:
+        config = util.parseConfig("../Config/Default.txt")
+        filename = "Default_results"
+        RESULT_DIR = os.path.join(RESULT_DIR, "Default")
+    os.makedirs(RESULT_DIR, exist_ok=True)
+    if config is not None:
+        PLOT = config[gc.OutputOptions][gc.plotOutput].lower() == "true"
+        SAVE = config[gc.OutputOptions][gc.saveOutput].lower() == "true"
+        RESULT_DICT, players = main(config)
+        
+        #do plot if desired
+        if PLOT:
+            fig, ax = plt.subplots()
+            x = np.linspace(1, len(RESULT_DICT['player_histories'][0]), len(RESULT_DICT['player_histories'][0]))
+            ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
+            playerMax = 0
+            i = 0
+            for hist in RESULT_DICT['player_histories']:
+                ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
+                #get player max
+                m = max(map(abs, [entry[0] for entry in hist]))
+                if m >= playerMax:
+                    playerMax = m
+                i += 1
+            ax2 = ax.twinx()
+            ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".")
+            maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
+            ax.set_ylim([-1*playerMax, playerMax])
+            ax2.set_ylim([-1*maxVal, maxVal])
+            ax2.tick_params(axis='y', labelcolor=housecolor)
+            ax.set_xlim([min(x), max(x)])
+            ax.legend(loc='upper left', bbox_to_anchor=(0,1)).set_zorder(20)
+            ax.set_xlabel("Hands played")
+            ax.set_ylabel("Player Winnings ($)")
+            ax2.set_ylabel("House Winnings ($)", rotation=270, va="center_baseline", color=housecolor)
+            ax.set_zorder(1)  # default zorder is 0 for ax1 and ax2
+            ax.set_frame_on(False)  # prevents ax1 from hiding ax2
+            fig.tight_layout()
+            if SAVE:
+                fig.savefig(os.path.join(RESULT_DIR, filename + ".png"), dpi=400)
+        if SAVE: writeResultDict(RESULT_DICT, os.path.join(RESULT_DIR, filename + ".txt"), players)
+    else:
+        print("Config file could not be openned or is not valid")
+        

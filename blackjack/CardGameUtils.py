@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 import os
 import itertools as it
 import GameConstants as gc
+import configparser as cp
 
 DEBUG = gc.DEBUG
 
@@ -49,3 +50,10 @@ def getHandValues(hand : list = []):
     for o in combs:
         scores.append(sum(o))
     return scores
+
+def parseConfig(file : str):
+    conf = cp.ConfigParser()
+    conf.read(file)
+    for key in conf:
+        if DEBUG: print(key)
+    return conf

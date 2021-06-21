@@ -1,0 +1,19 @@
+#Setup file for blackjack simulation
+
+[Game Constants]
+number_of_decks=1
+hands_to_play=100
+deck_file=../Decks/TradDeck.xml
+
+
+[Player Setup]
+player1=Test Player 1,../Strategies/DealerStrategy_15.xml,1.5
+player2=Test Player 2,../Strategies/DealerStrategy_16.xml,1.5
+player3=Test Player 3,../Strategies/DealerStrategy.xml,1.5
+player4=Test Player 4,../Strategies/DealerStrategy_18.xml,1.5
+player5=Test Player 5,../Strategies/DealerStrategy_19.xml,1.5
+player6=Test Player 6,Random,1.5
+
+[Output Options]
+plot=true
+save=true

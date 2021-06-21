@@ -8,7 +8,7 @@ Constants for the game, eventually this should be moved to a file or something
 """
 
 #Debug flag
-DEBUG = True
+DEBUG = False
 
 #Rule statics
 MAX_SCORE = 21
@@ -20,3 +20,15 @@ DOUBLEDOWN = 2
 BUST = 666
 
 AVAIL_ACTIONS = [HIT, STAND, DOUBLEDOWN]
+
+#Config file sections
+GameConst = "Game Constants"
+PlayerSetup = "Player Setup"
+OutputOptions = "Output Options"
+
+playerTag ="player"
+noOfDecks = "number_of_decks"
+handsToPlay = "hands_to_play"
+deck = "deck_file"
+plotOutput = "plot"
+saveOutput = "save"
