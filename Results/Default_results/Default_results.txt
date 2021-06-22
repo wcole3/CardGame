@@ -1,0 +1,31 @@
+Summary of Simulation
+Total table wins: 204659
+Total table pushes: 48883
+Total table losses: 246458
+Table winnings: -41799.0
+Player results
+	Test Player 1
+		Wins: 40871
+		Pushes: 9851
+		Losses: 49278
+		Winnings: -8407.0
+	Test Player 2
+		Wins: 41006
+		Pushes: 9814
+		Losses: 49180
+		Winnings: -8174.0
+	Test Player 3
+		Wins: 40916
+		Pushes: 9845
+		Losses: 49239
+		Winnings: -8323.0
+	Test Player 4
+		Wins: 40878
+		Pushes: 9766
+		Losses: 49356
+		Winnings: -8478.0
+	Test Player 5
+		Wins: 40988
+		Pushes: 9607
+		Losses: 49405
+		Winnings: -8417.0

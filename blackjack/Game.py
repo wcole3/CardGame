@@ -22,8 +22,8 @@ from Player import Player
 DEBUG = gc.DEBUG
 PLOT = True
 
-RESULT_DIR = "../Results/"
-CONFIG_DIR = "../COnfig/"
+BASE_RESULT_DIR = "../Results/"
+BASE_CONFIG_DIR = "../COnfig/"
 
 DEFAULT_HandsPlayed = 1
 DEFAULT_NoPlayers = 1
@@ -37,7 +37,7 @@ KNOWNCARDS = []
 
 #setup argparser
 parser = ap.ArgumentParser(description="Run a blackjack simulation")
-parser.add_argument("-cf", type=str, nargs=1, required=False, help="The configuration file for the simulation")
+parser.add_argument("-cf", type=str, nargs="*", required=False, help="The configuration file for the simulation")
 
 def initResultDict(players : list = []):
     #Setup the dict used to accumulate the results of the sim
@@ -215,53 +215,54 @@ def main(confFile : cp.ConfigParser = None):
 if __name__ == "__main__":
     config = None
     filename = ""
+    filesToRun = []
     if len(sys.argv) > 1:
         args = parser.parse_args()
         if args is not None:
-            config = util.parseConfig(CONFIG_DIR + str(args.cf[0]) + ".txt")
-            filename = str(args.cf[0]) + "_results"
-            RESULT_DIR = os.path.join(RESULT_DIR, str(args.cf[0]) + "_results")
+            filesToRun = args.cf
     else:
-        config = util.parseConfig("../Config/Default.txt")
-        filename = "Default_results"
-        RESULT_DIR = os.path.join(RESULT_DIR, "Default")
-    os.makedirs(RESULT_DIR, exist_ok=True)
-    if config is not None:
-        PLOT = config[gc.OutputOptions][gc.plotOutput].lower() == "true"
-        SAVE = config[gc.OutputOptions][gc.saveOutput].lower() == "true"
-        RESULT_DICT, players = main(config)
-        
-        #do plot if desired
-        if PLOT:
-            fig, ax = plt.subplots()
-            x = np.linspace(1, len(RESULT_DICT['player_histories'][0]), len(RESULT_DICT['player_histories'][0]))
-            ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
-            playerMax = 0
-            i = 0
-            for hist in RESULT_DICT['player_histories']:
-                ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
-                #get player max
-                m = max(map(abs, [entry[0] for entry in hist]))
-                if m >= playerMax:
-                    playerMax = m
-                i += 1
-            ax2 = ax.twinx()
-            ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".")
-            maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
-            ax.set_ylim([-1*playerMax, playerMax])
-            ax2.set_ylim([-1*maxVal, maxVal])
-            ax2.tick_params(axis='y', labelcolor=housecolor)
-            ax.set_xlim([min(x), max(x)])
-            ax.legend(loc='upper left', bbox_to_anchor=(0,1)).set_zorder(20)
-            ax.set_xlabel("Hands played")
-            ax.set_ylabel("Player Winnings ($)")
-            ax2.set_ylabel("House Winnings ($)", rotation=270, va="center_baseline", color=housecolor)
-            ax.set_zorder(1)  # default zorder is 0 for ax1 and ax2
-            ax.set_frame_on(False)  # prevents ax1 from hiding ax2
-            fig.tight_layout()
-            if SAVE:
-                fig.savefig(os.path.join(RESULT_DIR, filename + ".png"), dpi=400)
-        if SAVE: writeResultDict(RESULT_DICT, os.path.join(RESULT_DIR, filename + ".txt"), players)
-    else:
-        print("Config file could not be openned or is not valid")
+        filesToRun = ['Default']
+    for file in filesToRun:
+        config = util.parseConfig(BASE_CONFIG_DIR + str(file) + ".txt")
+        filename = str(file) + "_results"
+        RESULT_DIR = os.path.join(BASE_RESULT_DIR, str(file) + "_results")
+        os.makedirs(RESULT_DIR, exist_ok=True)
+        if config is not None:
+            PLOT = config[gc.OutputOptions][gc.plotOutput].lower() == "true"
+            SAVE = config[gc.OutputOptions][gc.saveOutput].lower() == "true"
+            RESULT_DICT, players = main(config)
+            
+            #do plot if desired
+            if PLOT:
+                fig, ax = plt.subplots()
+                x = np.linspace(1, len(RESULT_DICT['player_histories'][0]), len(RESULT_DICT['player_histories'][0]))
+                ax.hlines(0, min(x), max(x), linestyles='dashed', linewidth = 0.5)
+                playerMax = 0
+                i = 0
+                for hist in RESULT_DICT['player_histories']:
+                    ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
+                    #get player max
+                    m = max(map(abs, [entry[0] for entry in hist]))
+                    if m >= playerMax:
+                        playerMax = m
+                    i += 1
+                ax2 = ax.twinx()
+                ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".")
+                maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
+                ax.set_ylim([-1*playerMax, playerMax])
+                ax2.set_ylim([-1*maxVal, maxVal])
+                ax2.tick_params(axis='y', labelcolor=housecolor)
+                ax.set_xlim([min(x), max(x)])
+                ax.legend(loc='upper left', bbox_to_anchor=(0,1)).set_zorder(20)
+                ax.set_xlabel("Hands played")
+                ax.set_ylabel("Player Winnings ($)")
+                ax2.set_ylabel("House Winnings ($)", rotation=270, va="center_baseline", color=housecolor)
+                ax.set_zorder(1)  # default zorder is 0 for ax1 and ax2
+                ax.set_frame_on(False)  # prevents ax1 from hiding ax2
+                fig.tight_layout()
+                if SAVE:
+                    fig.savefig(os.path.join(RESULT_DIR, filename + ".png"), dpi=400)
+            if SAVE: writeResultDict(RESULT_DICT, os.path.join(RESULT_DIR, filename + ".txt"), players)
+        else:
+            print("Config file could not be openned or is not valid")
         
