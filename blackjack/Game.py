@@ -90,9 +90,14 @@ def getResults(players : list, dealer : Player):
                     pushes += 1
                     player.push()
             elif player.getScore() > dealer.getScore():
+                #Check for blackjack
                 winners += 1
-                player.win()
-                winnings += player.bet
+                if player.getScore() == 21 and len(player.hand) == 2:
+                    player.win(True)
+                    winnings += gc.BJ_MOD * player.bet
+                else:
+                    player.win()
+                    winnings += player.bet
             else:
                 player.lose()
                 winnings -= player.bet
@@ -118,6 +123,7 @@ def getPlays(player : Player, deck : Deck):
                 playing = False
         elif action == gc.STAND:
             playing = False
+        #TODO implement split and surrender
         else: playing = False
     
 def cleanupGame(players : list = None, dealer : Player = None, deck : Deck = None, betSizes : list = []):

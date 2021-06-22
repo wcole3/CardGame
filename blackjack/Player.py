@@ -47,9 +47,12 @@ class Player:
     def setBet(self, betSize : float = 0.0):
         self.bet = betSize
         
-    def win(self):
+    def win(self, bj : bool = False):
         self.wins += 1
-        self.bank += self.bet
+        if bj:
+            self.bank += gc.BJ_MOD * self.bet
+        else:
+            self.bank += self.bet
         self.winningsHistory.append((self.bank, self.getScore()))
     
     def push(self):
