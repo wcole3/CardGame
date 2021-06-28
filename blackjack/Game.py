@@ -20,7 +20,6 @@ from Player import Player
 
 
 DEBUG = gc.DEBUG
-PLOT = True
 
 BASE_RESULT_DIR = "../Results/"
 BASE_CONFIG_DIR = "../Config/"

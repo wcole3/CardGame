@@ -43,7 +43,9 @@ class Strategy:
         if(DEBUG): print("Current Hand: " + str([card.getFullName() for card in hand]))
         if(DEBUG): print("Boardstate: " + str([card.getFullName() for card in knownCards]))
         if(DEBUG): print("Dealer shown card: ", dealerCard.getFullName())
-        self.score = self.getValue(hand)
+        handVal = self.getValue(hand)
+        self.score = handVal[0]
+        self.soft = handVal[1]
         self.dealer = dealerCard
         self.knowncount = self.getKnownCount(knownCards)
         if(DEBUG): print("Score: ", self.score)
@@ -64,13 +66,14 @@ class Strategy:
         
     #gets the max value of the hand below max score or BUST
     def getValue(self, hand : list = []):
-        scores = sorted(util.getHandValues(hand), key=int, reverse=True)
+        handVals, soft = util.getHandValues(hand)
+        scores = sorted(zip(handVals, soft), key=lambda pair : pair[0], reverse=True)
         if(DEBUG): print(scores)
         for score in scores:
-            if score <= gc.MAX_SCORE:
+            if score[0] <= gc.MAX_SCORE:
                 return score
         #all scores bust
-        return gc.BUST
+        return (gc.BUST, False)
     
     def getScore(self):
         return self.score
@@ -85,7 +88,7 @@ class Strategy:
         if self.rules is None or len(self.rules) == 0 or ruleNo >= len(self.rules):
             return gc.STAND
         else:
-            action = self.rules[ruleNo].evaluate(self.score, self.dealer, self.knowncount)
+            action = self.rules[ruleNo].evaluate(self.score, self.dealer, self.knowncount, self.soft)
             if action == Rule.ACTION_HIT:
                 return gc.HIT
             elif action == Rule.ACTION_STAND:
