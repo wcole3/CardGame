@@ -29,7 +29,7 @@ class testRule(unittest.TestCase):
         logic = rule.ruleStatements
         self.assertEqual(len(logic), 4)
         self.assertEqual(logic[0], Rule.LOGIC_IF)
-        self.assertEqual(logic[1], Rule.VAR_Score)
+        self.assertEqual(logic[1], Rule.VAR_SCORE)
         self.assertEqual(logic[2], 'lt')
         self.assertEqual(int(logic[3]), 17)
         hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
@@ -66,6 +66,15 @@ class testRule(unittest.TestCase):
         hand.append(deck.getCard("Hearts", "Three"))
         action = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.STAND)
+        
+    def testSoft(self):
+        suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
+        deck = Deck(suites, namevals)
+        strat = Strategy("../../Strategies/DealerStrategy.xml")
+        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Ace")]
+        action = strat.getPlay(hand, hand, deck.getCard("Diamonds", "Queen"))
+        self.assertEqual(action, gc.STAND)
+        self.assertEqual(strat.soft, True)
         
 if __name__ == "__main__":
     unittest.main()

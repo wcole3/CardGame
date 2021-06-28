@@ -25,9 +25,10 @@ LOGIC_AND = "AND"
 LOGIC_OR = "OR"
 LOGIC_NOT = "NOT"
 
-VAR_Score = "SCORE"
-VAR_DealerShown = "DEALERSHOWN"
+VAR_SCORE = "SCORE"
+VAR_DEALERSHOWN = "DEALERSHOWN"
 VAR_KNOWNCOUNT = "COUNT"
+VAR_SOFT = "SOFT"
 
 CHECK_LESSTHAN = "lt"
 CHECK_LESSTHANEQ = "lte"
@@ -38,6 +39,7 @@ CHECK_GREATERTHANEQ = "gte"
 ACTION_HIT = "HIT"
 ACTION_STAND = "STAND"
 ACTION_DOUBLE = "DOUBLEDOWN"
+ACTION_SPLIT = "SPLIT"
 ACTION_NEXTRULE = "NEXTRULE"
 
 
@@ -78,10 +80,11 @@ class Rule:
             attrs = [LOGIC_NOT, self.parseLogic(element.find("Logic"))]
         return attrs
     
-    def evaluate(self, score : int, dealerCard : Card, count : int):
+    def evaluate(self, score : int, dealerCard : Card, count : int, soft : bool):
         self.score = score
         self.dealer = dealerCard
         self.count = count
+        self.soft = soft
         return self.true_action if self.evaluateRule(self.ruleStatements) else self.false_action
     
     def evaluateRule(self, rules):
@@ -111,12 +114,14 @@ class Rule:
         
         #get the variable
         var = None
-        if logic[1] == VAR_Score:
+        if logic[1] == VAR_SCORE:
             var = self.score
-        elif logic[1] == VAR_DealerShown:
+        elif logic[1] == VAR_DEALERSHOWN:
             var = max(self.dealer.getValues())
         elif logic[1] == VAR_KNOWNCOUNT:
             var = self.count
+        elif logic[1] == VAR_SOFT:
+            return self.soft
         else:
             raise ValueError("Unknown variable type encountered in rule")
             

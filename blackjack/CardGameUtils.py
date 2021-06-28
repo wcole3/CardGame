@@ -47,9 +47,14 @@ def getHandValues(hand : list = []):
     combs = list(it.product(*cardValues))
     if(DEBUG): print(combs)
     scores = []
+    softList = []
     for o in combs:
         scores.append(sum(o))
-    return scores
+        if 11 in o:
+            softList.append(True)
+        else:
+            softList.append(False)
+    return scores, softList
 
 def parseConfig(file : str):
     conf = cp.ConfigParser()

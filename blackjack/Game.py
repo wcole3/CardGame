@@ -20,10 +20,9 @@ from Player import Player
 
 
 DEBUG = gc.DEBUG
-PLOT = True
 
 BASE_RESULT_DIR = "../Results/"
-BASE_CONFIG_DIR = "../COnfig/"
+BASE_CONFIG_DIR = "../Config/"
 
 DEFAULT_HandsPlayed = 1
 DEFAULT_NoPlayers = 1
