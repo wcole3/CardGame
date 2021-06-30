@@ -1,50 +1,31 @@
 Summary of Simulation
-<<<<<<< HEAD
-Total table wins: 1
-Total table pushes: 1
-Total table losses: 3
-Table winnings: -2.0
-=======
-Total table wins: 2
-Total table pushes: 0
-Total table losses: 3
-Table winnings: -1.0
->>>>>>> cbc2001108beea787ee831c793963868e6ae003b
+Total table wins: 144
+Total table pushes: 41
+Total table losses: 315
+Table winnings: -115.0
 Player results
 	Test Player 1
-		Wins: 0
-		Pushes: 0
-		Losses: 1
-		Winnings: -1.0
+		Wins: 40
+		Pushes: 11
+		Losses: 49
+		Winnings: -6.0
 	Test Player 2
-<<<<<<< HEAD
-		Wins: 0
-		Pushes: 0
-		Losses: 1
-		Winnings: -1.0
+		Wins: 38
+		Pushes: 9
+		Losses: 53
+		Winnings: -14.0
 	Test Player 3
-		Wins: 0
-		Pushes: 1
-		Losses: 0
-		Winnings: 0.0
-=======
-		Wins: 1
-		Pushes: 0
-		Losses: 0
-		Winnings: 1.0
-	Test Player 3
-		Wins: 0
-		Pushes: 0
-		Losses: 1
-		Winnings: -1.0
->>>>>>> cbc2001108beea787ee831c793963868e6ae003b
+		Wins: 35
+		Pushes: 8
+		Losses: 57
+		Winnings: -21.0
 	Test Player 4
-		Wins: 1
-		Pushes: 0
-		Losses: 0
-		Winnings: 1.0
+		Wins: 31
+		Pushes: 13
+		Losses: 56
+		Winnings: -24.0
 	Test Player 5
 		Wins: 0
 		Pushes: 0
-		Losses: 1
-		Winnings: -1.0
+		Losses: 100
+		Winnings: -50.0

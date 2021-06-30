@@ -2,7 +2,7 @@
 
 [Game Constants]
 number_of_decks=1
-hands_to_play=1
+hands_to_play=100
 deck_file=../Decks/TradDeck.xml
 
 
@@ -11,7 +11,7 @@ player1=Test Player 1,../Strategies/DealerStrategy.xml,1
 player2=Test Player 2,../Strategies/DealerStrategy.xml,1
 player3=Test Player 3,../Strategies/DealerStrategy.xml,1
 player4=Test Player 4,../Strategies/DealerStrategy.xml,1
-player5=Test Player 5,../Strategies/DealerStrategy.xml,1
+player5=Test Player 5,../Strategies/TestStrategySurrender.xml,1
 
 [Output Options]
 plot=true

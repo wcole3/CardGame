@@ -21,7 +21,7 @@ class testStrategy(unittest.TestCase):
     def testDealerStrategy(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
-        strat = Strategy(None)
+        strat = Strategy("../../Strategies/DealerStrategy.xml")
         hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
         action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.HIT)
@@ -35,6 +35,15 @@ class testStrategy(unittest.TestCase):
         self.assertEqual(action, gc.BUST)
         self.assertEqual(strat.getScore(), 0)
         
+    def testSurrenderStrategy(self):
+        suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
+        deck = Deck(suites, namevals)
+        strat = Strategy("../../Strategies/TestStrategySurrender.xml")
+        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
+        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        self.assertEqual(action, gc.SURRENDER)
+        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"), True)
+        self.assertEqual(action, gc.BUST)
         
 if __name__ == "__main__":
     unittest.main()

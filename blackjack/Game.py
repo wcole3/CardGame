@@ -122,7 +122,13 @@ def getPlays(player : Player, deck : Deck):
                 playing = False
         elif action == gc.STAND:
             playing = False
-        #TODO implement split and surrender
+        elif action == gc.SURRENDER:
+            player.setBet(player.bet*0.5)
+            player.play(True)
+            playing = False
+        elif action == gc.SPLIT:
+            print("splitting")
+            #TODO
         else: playing = False
     
 def cleanupGame(players : list = None, dealer : Player = None, deck : Deck = None, betSizes : list = []):
@@ -131,6 +137,7 @@ def cleanupGame(players : list = None, dealer : Player = None, deck : Deck = Non
             deck.discard(card)
         players[i].hand.clear()
         players[i].setBet(betSizes[i])
+        players[i].surrendering = False
     for card in dealer.hand:
         deck.discard(card)
     dealer.hand.clear()

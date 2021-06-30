@@ -38,7 +38,7 @@ class Strategy:
         self.score = 0
         
         
-    def getPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None):
+    def getPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None, surrender : bool = False):
         #checks the current hand and known cards against the rules
         if(DEBUG): print("Current Hand: " + str([card.getFullName() for card in hand]))
         if(DEBUG): print("Boardstate: " + str([card.getFullName() for card in knownCards]))
@@ -50,7 +50,7 @@ class Strategy:
         self.knowncount = self.getKnownCount(knownCards)
         if(DEBUG): print("Score: ", self.score)
         #check for special strategies
-        if self.score > gc.MAX_SCORE:
+        if self.score > gc.MAX_SCORE or surrender:
             self.score = 0
             return gc.BUST
         if self.file == "Dealer":
@@ -95,6 +95,10 @@ class Strategy:
                 return gc.STAND
             elif action == Rule.ACTION_DOUBLE:
                 return gc.DOUBLEDOWN
+            elif action == Rule.ACTION_SPLIT:
+                return gc.SPLIT
+            elif action == Rule.ACTION_SURRENDER:
+                return gc.SURRENDER
             elif action == Rule.ACTION_NEXTRULE:
                 ruleNo += 1
                 return self.getPlayFromRules(ruleNo)

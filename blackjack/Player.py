@@ -30,9 +30,9 @@ class Player:
         self.winningsHistory = []
         if(DEBUG): print("Created player")
         
-    def play(self):
+    def play(self, surrender : bool = False):
         if(DEBUG): print(self.name, " playing")
-        return self.strat.getPlay(self.hand, self.knownCards, self.dealerCard)
+        return self.strat.getPlay(self.hand, self.knownCards, self.dealerCard, surrender)
         
     def readGame(self, known, dealerCard):
         self.knownCards = known

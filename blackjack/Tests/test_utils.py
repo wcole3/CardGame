@@ -25,14 +25,14 @@ class testUtils(unittest.TestCase):
         
         hand1 = [twoClubs, eightDia]
         scores1 = utils.getHandValues(hand1)
-        self.assertEqual(scores1, [10])
+        self.assertEqual(scores1[0], [10])
         
         hand1.append(jackSpades)
         scores2 = utils.getHandValues(hand1)
-        self.assertEqual(scores2, [20])
+        self.assertEqual(scores2[0], [20])
         
         hand1.append(aceHearts)
-        scores3 = utils.getHandValues(hand1)
+        scores3, soft = utils.getHandValues(hand1)
         self.assertEqual(sorted(scores3, key = int, reverse=True), [31, 21])
         
 if __name__ == "__main__":

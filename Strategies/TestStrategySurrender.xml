@@ -1,0 +1,7 @@
+<Strategy name="Test1">
+	<Rules>
+		<Rule true_action="SURRENDER" false_action="STAND">
+			<Logic operation="IF" var="SCORE" check="gte" value="2"/>
+		</Rule>
+	</Rules>
+</Strategy>
