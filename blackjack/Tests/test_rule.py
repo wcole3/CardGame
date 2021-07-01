@@ -33,15 +33,15 @@ class testRule(unittest.TestCase):
         self.assertEqual(logic[2], 'lt')
         self.assertEqual(int(logic[3]), 17)
         hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.HIT)
         self.assertEqual(strat.getScore(), 16)
         hand.append(deck.getCard("Spades", "Two"))
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.STAND)
         self.assertEqual(strat.getScore(), 18)
         hand.append(deck.getCard("Hearts", "King"))
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.BUST)
         self.assertEqual(strat.getScore(), 0)
         
@@ -52,19 +52,19 @@ class testRule(unittest.TestCase):
         self.assertEqual(len(strat.rules), 2)
         dealerCard = deck.getCard("Hearts", "Ace")
         hand =[deck.getCard("Clubs", "Two"), deck.getCard("Spades", "Two")]
-        action = strat.getPlay(hand, hand, dealerCard)
+        action, score = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.DOUBLEDOWN)
         hand.append(deck.getCard("Diamonds", "Seven"))
-        action = strat.getPlay(hand, hand, dealerCard)
+        action, score = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.DOUBLEDOWN)
         hand.append(deck.getCard("Hearts", "Four"))
-        action = strat.getPlay(hand, hand, dealerCard)
+        action, score = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.STAND)
         dealerCard = deck.getCard("Spades", "Three")
-        action = strat.getPlay(hand, hand, dealerCard)
+        action, score = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.HIT)
         hand.append(deck.getCard("Hearts", "Three"))
-        action = strat.getPlay(hand, hand, dealerCard)
+        action, score = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.STAND)
         
     def testSoft(self):
@@ -72,7 +72,7 @@ class testRule(unittest.TestCase):
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/DealerStrategy.xml")
         hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Ace")]
-        action = strat.getPlay(hand, hand, deck.getCard("Diamonds", "Queen"))
+        action, score = strat.getPlay(hand, hand, deck.getCard("Diamonds", "Queen"))
         self.assertEqual(action, gc.STAND)
         self.assertEqual(strat.soft, True)
         

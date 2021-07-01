@@ -23,15 +23,15 @@ class testStrategy(unittest.TestCase):
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/DealerStrategy.xml")
         hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.HIT)
-        self.assertEqual(strat.getScore(), 16)
+        self.assertEqual(score, 16)
         hand.append(deck.getCard("Spades", "Two"))
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.STAND)
-        self.assertEqual(strat.getScore(), 18)
+        self.assertEqual(score, 18)
         hand.append(deck.getCard("Hearts", "King"))
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.BUST)
         self.assertEqual(strat.getScore(), 0)
         
@@ -40,9 +40,9 @@ class testStrategy(unittest.TestCase):
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/TestStrategySurrender.xml")
         hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.SURRENDER)
-        action = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"), True)
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"), True)
         self.assertEqual(action, gc.BUST)
         
 if __name__ == "__main__":

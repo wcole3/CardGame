@@ -12,6 +12,7 @@ DEBUG = True
 
 #Rule statics
 MAX_SCORE = 21
+MAX_HANDS = 4
 
 #Game actions
 HIT = 0

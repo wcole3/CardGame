@@ -74,73 +74,94 @@ def getResults(players : list, dealer : Player):
     winnings = 0.0
     if(DEBUG): print("Dealer score: ", dealer.getScore())
     for player in players:
-        if(DEBUG): print(player.name, " score: ", player.getScore())
-        if player.getScore() > 0:#player loses regardless
-            if player.getScore() == dealer.getScore():
-                #special check for natural dealer blackjack
-                if dealer.getScore() == 21 and len(dealer.hand) == 2:
-                    if len(player.hand) == 2:
+        handNo = 0
+        while handNo < len(player.hands):
+            score = player.getScore(handNo)
+            if(DEBUG): print(player.name, "hand #: ", handNo, " score: ", score)
+            if score > 0:#player loses regardless
+                if score == dealer.getScore():
+                    #special check for natural dealer blackjack
+                    if dealer.getScore() == 21 and len(dealer.hands[0]) == 2:
+                        if len(player.hands[handNo]) == 2:
+                            pushes += 1
+                            player.push()
+                        else:
+                            player.lose()
+                            winnings -= player.bets[handNo]
+                    else:
                         pushes += 1
                         player.push()
+                elif score > dealer.getScore():
+                    #Check for blackjack
+                    winners += 1
+                    if player.getScore() == 21 and len(player.hands[handNo]) == 2:
+                        player.win(True)
+                        winnings += gc.BJ_MOD * player.bet
                     else:
-                        player.lose()
-                        winnings -= player.bet
+                        player.win()
+                        winnings += player.bets[handNo]
                 else:
-                    pushes += 1
-                    player.push()
-            elif player.getScore() > dealer.getScore():
-                #Check for blackjack
-                winners += 1
-                if player.getScore() == 21 and len(player.hand) == 2:
-                    player.win(True)
-                    winnings += gc.BJ_MOD * player.bet
-                else:
-                    player.win()
-                    winnings += player.bet
+                    player.lose()
+                    winnings -= player.bets[handNo]
             else:
                 player.lose()
-                winnings -= player.bet
-        else:
-            player.lose()
-            winnings -= player.bet
+                winnings -= player.bets[handNo]
+            handNo += 1
     return winners, pushes, len(players) - winners - pushes, winnings
 
 def getPlays(player : Player, deck : Deck):
-    playing = True
-    while playing:
-        player.readGame(KNOWNCARDS, DEALER_SHOWN)
-        action = player.play()
-        if action == gc.BUST:
-            playing = False
-        elif action == gc.HIT or action == gc.DOUBLEDOWN:
-            card = deck.drawCard()
-            player.drawCard(card)
-            KNOWNCARDS.append(card)
-            if action == gc.DOUBLEDOWN:
-                player.setBet(player.bet*2)
-                player.play()#call to set score
+    handNo = 0
+    while handNo < len(player.hands):
+        playing = True
+        while playing:
+            player.readGame(KNOWNCARDS, DEALER_SHOWN)
+            action = player.play(handNo)
+            if action == gc.BUST:
                 playing = False
-        elif action == gc.STAND:
-            playing = False
-        elif action == gc.SURRENDER:
-            player.setBet(player.bet*0.5)
-            player.play(True)
-            playing = False
-        elif action == gc.SPLIT:
-            print("splitting")
-            #TODO
-        else: playing = False
+            elif action == gc.HIT or action == gc.DOUBLEDOWN:
+                card = deck.drawCard()
+                player.drawCard(card, handNo)
+                KNOWNCARDS.append(card)
+                if action == gc.DOUBLEDOWN:
+                    player.setBet(player.bet*2)
+                    player.play(handNo)#call to set score
+                    playing = False
+            elif action == gc.STAND:
+                playing = False
+            elif action == gc.SURRENDER:
+                player.setBet(player.bet*0.5, handNo)
+                player.play(handNo, True)
+                playing = False
+            elif action == gc.SPLIT:
+                if(len(player.hands) < gc.MAX_HANDS):
+                    #split into two hands and add card
+                    hand1 = [player.hands[handNo][0]]
+                    hand2 = [player.hands[handNo][1]]
+                    player.scores.append(0)
+                    player.bets.append(player.bet)
+                    player.hands[handNo] = hand1
+                    player.hands.append(hand2)
+                    card1 = deck.drawCard()
+                    player.drawCard(card1, handNo)
+                    KNOWNCARDS.append(card1)
+                    card2 = deck.drawCard()
+                    player.drawCard(card2, len(player.hands)-1)
+                    KNOWNCARDS.append(card2)
+                else:
+                    #Cant split get last false action
+                    player.play(handNo)
+                    playing = False
+            else: playing = False
+        handNo += 1
     
 def cleanupGame(players : list = None, dealer : Player = None, deck : Deck = None, betSizes : list = []):
     for i in range(len(players)):
-        for card in players[i].hand:
+        cards = players[i].roundEnd(betSizes[i])
+        for card in cards:
             deck.discard(card)
-        players[i].hand.clear()
-        players[i].setBet(betSizes[i])
-        players[i].surrendering = False
-    for card in dealer.hand:
+    for card in dealer.hands[0]:
         deck.discard(card)
-    dealer.hand.clear()
+    dealer.hands[0].clear()
     KNOWNCARDS.clear()
     
 def printSummary(results : dict, players : list = None):

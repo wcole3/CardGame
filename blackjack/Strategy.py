@@ -52,13 +52,13 @@ class Strategy:
         #check for special strategies
         if self.score > gc.MAX_SCORE or surrender:
             self.score = 0
-            return gc.BUST
+            return gc.BUST, self.score
         if self.file == "Dealer":
-            return self.getDealerPlay(hand, knownCards, dealerCard)
+            return self.getDealerPlay(hand, knownCards, dealerCard), self.score
         elif self.file == "Random":
-            return random.randint(0, len(gc.AVAIL_ACTIONS))
+            return random.randint(0, len(gc.AVAIL_ACTIONS)), self.score
         else:
-            return self.getPlayFromRules(0)
+            return self.getPlayFromRules(0), self.score
         
     def getKnownCount(self, knownCards : list):
         #TODO
