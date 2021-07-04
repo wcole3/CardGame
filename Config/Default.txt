@@ -4,6 +4,8 @@
 number_of_decks=1
 hands_to_play=1
 deck_file=../Decks/TradDeck.xml
+max_splits=4
+blackjack_mod=1.5
 
 
 [Player Setup]

@@ -44,6 +44,7 @@ class Strategy:
         if(DEBUG): print("Boardstate: " + str([card.getFullName() for card in knownCards]))
         if(DEBUG): print("Dealer shown card: ", dealerCard.getFullName())
         handVal = self.getValue(hand)
+        self.hand = hand
         self.score = handVal[0]
         self.soft = handVal[1]
         self.dealer = dealerCard
@@ -88,7 +89,7 @@ class Strategy:
         if self.rules is None or len(self.rules) == 0 or ruleNo >= len(self.rules):
             return gc.STAND
         else:
-            action = self.rules[ruleNo].evaluate(self.score, self.dealer, self.knowncount, self.soft)
+            action = self.rules[ruleNo].evaluate(self.score, self.dealer, self.knowncount, self.soft, self.hand)
             if action == Rule.ACTION_HIT:
                 return gc.HIT
             elif action == Rule.ACTION_STAND:

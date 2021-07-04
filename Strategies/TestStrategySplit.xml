@@ -1,7 +1,7 @@
 <Strategy name="Test1">
 	<Rules>
 		<Rule true_action="SPLIT" false_action="STAND">
-			<Logic operation="IF" var="SCORE" check="lte" value="12"/>
+			<Logic operation="IF" var="PAIR" check="gte" value="8"/>
 		</Rule>
 	</Rules>
 </Strategy>

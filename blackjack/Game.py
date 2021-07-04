@@ -263,6 +263,9 @@ if __name__ == "__main__":
         if config is not None:
             PLOT = config[gc.OutputOptions][gc.plotOutput].lower() == "true"
             SAVE = config[gc.OutputOptions][gc.saveOutput].lower() == "true"
+            gc.MAX_HANDS = config.get(gc.GameConst, gc.maxHandTag, fallback=4)
+            gc.BJ_MOD = config.get(gc.GameConst, gc.blackjackModTag, fallback=1.5)
+            #Run sim
             RESULT_DICT, players = main(config)
             
             #do plot if desired

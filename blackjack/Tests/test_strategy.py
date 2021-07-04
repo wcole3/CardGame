@@ -45,5 +45,25 @@ class testStrategy(unittest.TestCase):
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"), True)
         self.assertEqual(action, gc.BUST)
         
+    def testSplitStrategy(self):
+        suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
+        deck = Deck(suites, namevals)
+        strat = Strategy("../../Strategies/TestStrategySplit.xml")
+        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        self.assertEqual(action, gc.STAND)
+        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Six")]
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        self.assertEqual(action, gc.STAND)
+        hand =[deck.getCard("Clubs", "Eight"), deck.getCard("Diamonds", "Eight")]
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        self.assertEqual(action, gc.SPLIT)
+        hand =[deck.getCard("Clubs", "Ace"), deck.getCard("Diamonds", "Ace")]
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        self.assertEqual(action, gc.SPLIT)
+        hand.append(deck.getCard("Spades", "Two"))
+        action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
+        self.assertEqual(action, gc.STAND)
+        
 if __name__ == "__main__":
     unittest.main()

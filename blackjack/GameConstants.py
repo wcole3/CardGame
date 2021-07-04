@@ -32,6 +32,8 @@ GameConst = "Game Constants"
 PlayerSetup = "Player Setup"
 OutputOptions = "Output Options"
 
+maxHandTag = "max_splits"
+blackjackModTag = "blackjack_mod"
 playerTag ="player"
 noOfDecks = "number_of_decks"
 handsToPlay = "hands_to_play"

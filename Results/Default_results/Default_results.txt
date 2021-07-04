@@ -1,11 +1,11 @@
 Summary of Simulation
-Total table wins: 78
-Total table pushes: 9
-Total table losses: 13
-Table winnings: -20.5
+Total table wins: 0
+Total table pushes: 0
+Total table losses: 1
+Table winnings: -1.0
 Player results
 	Test Player 1
-		Wins: 78
-		Pushes: 9
-		Losses: 102
-		Winnings: -20.5
+		Wins: 0
+		Pushes: 0
+		Losses: 1
+		Winnings: -1.0
