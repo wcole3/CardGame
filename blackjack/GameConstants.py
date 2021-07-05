@@ -14,6 +14,9 @@ DEBUG = True
 MAX_SCORE = 21
 MAX_HANDS = 4
 
+#Shuffle point for multi decks, if the shoe has used more than this portion of cards it will shuffle
+SHUFFLE_POINT = 0.75
+
 #Game actions
 HIT = 0
 STAND = 1
@@ -25,7 +28,7 @@ BUST = 666
 #Blackjack modifier
 BJ_MOD = 1.5
 
-AVAIL_ACTIONS = [HIT, STAND, DOUBLEDOWN]
+AVAIL_ACTIONS = [HIT, STAND, DOUBLEDOWN, SPLIT, SURRENDER]
 
 #Config file sections
 GameConst = "Game Constants"
@@ -34,6 +37,7 @@ OutputOptions = "Output Options"
 
 maxHandTag = "max_splits"
 blackjackModTag = "blackjack_mod"
+shuffleTag = "shuffle_point"
 playerTag ="player"
 noOfDecks = "number_of_decks"
 handsToPlay = "hands_to_play"

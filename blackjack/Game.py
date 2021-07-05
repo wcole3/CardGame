@@ -8,6 +8,7 @@ Created on Mon May 31 16:51:47 2021
 import argparse as ap
 import sys
 import os
+import glob
 import CardGameUtils as util
 import GameConstants as gc
 import matplotlib.pyplot as plt
@@ -55,6 +56,7 @@ def setupPlayers(strats : [], betSizes : list = [], names : list = []):
     
 def dealOpeningHands(players : list = [], dealer : Player = None, deck : Deck = None):
     if deck.noOfDecks == 1: deck.shuffle()
+    elif (deck.discarded/len(deck.cards)) >= gc.SHUFFLE_POINT: deck.shuffle() 
     #deal opening hands
     for i in range(2):
         for player in players:
@@ -253,21 +255,26 @@ if __name__ == "__main__":
         args = parser.parse_args()
         if args is not None:
             filesToRun = args.cf
+            if filesToRun[0] == "ALL":
+                filesToRun = util.getAllConfigFiles(BASE_CONFIG_DIR)
+                print(*filesToRun)
     else:
         filesToRun = ['Default']
     for file in filesToRun:
-        config = util.parseConfig(BASE_CONFIG_DIR + str(file) + ".txt")
+        if DEBUG: print("Running file: ", file)
+        if not file.endswith(".txt"): file = file + ".txt"
+        config = util.parseConfig(BASE_CONFIG_DIR + str(file))
         filename = str(file) + "_results"
         RESULT_DIR = os.path.join(BASE_RESULT_DIR, str(file) + "_results")
         os.makedirs(RESULT_DIR, exist_ok=True)
         if config is not None:
             PLOT = config[gc.OutputOptions][gc.plotOutput].lower() == "true"
             SAVE = config[gc.OutputOptions][gc.saveOutput].lower() == "true"
-            gc.MAX_HANDS = config.get(gc.GameConst, gc.maxHandTag, fallback=4)
-            gc.BJ_MOD = config.get(gc.GameConst, gc.blackjackModTag, fallback=1.5)
+            gc.MAX_HANDS = int(config.get(gc.GameConst, gc.maxHandTag, fallback=4))
+            gc.BJ_MOD = float(config.get(gc.GameConst, gc.blackjackModTag, fallback=1.5))
+            gc.SHUFFLE_POINT = float(config.get(gc.GameConst, gc.shuffleTag, fallback=0.0))
             #Run sim
             RESULT_DICT, players = main(config)
-            
             #do plot if desired
             if PLOT:
                 fig, ax = plt.subplots()

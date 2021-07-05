@@ -62,3 +62,8 @@ def parseConfig(file : str):
     for key in conf:
         if DEBUG: print(key)
     return conf
+
+def getAllConfigFiles(path : str):
+    return [file for file in os.listdir(path) if file.endswith(".txt")]
+        
+            
