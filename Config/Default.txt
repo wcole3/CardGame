@@ -2,14 +2,14 @@
 
 [Game Constants]
 number_of_decks=1
-hands_to_play=2
+hands_to_play=10000
 deck_file=../Decks/TradDeck.xml
 max_splits=4
 blackjack_mod=1.5
 
 
 [Player Setup]
-player1=Test Player 1,../Strategies/DealerStrategy.xml,1
+player1=Test Player 1,../Strategies/4to8d_s17stand.xml,1
 player2=Test Player 2,../Strategies/DealerStrategy.xml,1
 player3=Test Player 3,../Strategies/DealerStrategy.xml,1
 player4=Test Player 4,../Strategies/DealerStrategy.xml,1

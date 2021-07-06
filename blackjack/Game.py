@@ -121,10 +121,13 @@ def getPlays(player : Player, deck : Deck):
             if action == gc.BUST:
                 playing = False
             elif action == gc.HIT or action == gc.DOUBLEDOWN:
+                doubleAllowed = False
+                if action == gc.DOUBLEDOWN:
+                    doubleAllowed = len(player.hands[handNo]) == 2
                 card = deck.drawCard()
                 player.drawCard(card, handNo)
                 KNOWNCARDS.append(card)
-                if action == gc.DOUBLEDOWN:
+                if doubleAllowed:
                     player.setBet(player.bet*2)
                     player.play(handNo)#call to set score
                     playing = False
@@ -262,8 +265,9 @@ if __name__ == "__main__":
         filesToRun = ['Default']
     for file in filesToRun:
         if DEBUG: print("Running file: ", file)
-        if not file.endswith(".txt"): file = file + ".txt"
-        config = util.parseConfig(BASE_CONFIG_DIR + str(file))
+        filewithext = file
+        if not filewithext.endswith(".txt"): filewithext = filewithext + ".txt"
+        config = util.parseConfig(BASE_CONFIG_DIR + str(filewithext))
         filename = str(file) + "_results"
         RESULT_DIR = os.path.join(BASE_RESULT_DIR, str(file) + "_results")
         os.makedirs(RESULT_DIR, exist_ok=True)
@@ -283,14 +287,14 @@ if __name__ == "__main__":
                 playerMax = 0
                 i = 0
                 for hist in RESULT_DICT['player_histories']:
-                    ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".")
+                    ax.plot(x, [entry[0] for entry in hist], label=RESULT_DICT['player_names'][i], marker=".", linewidth=2, markersize=2)
                     #get player max
                     m = max(map(abs, [entry[0] for entry in hist]))
                     if m >= playerMax:
                         playerMax = m
                     i += 1
                 ax2 = ax.twinx()
-                ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".")
+                ax2.plot(x, [-1*entry[0] for entry in RESULT_DICT['table_history']], c=housecolor, label="House", marker=".", linewidth=2, markersize=2)
                 maxVal = max(map(abs, [entry[0] for entry in RESULT_DICT['table_history']]))
                 ax.set_ylim([-1*playerMax, playerMax])
                 ax2.set_ylim([-1*maxVal, maxVal])

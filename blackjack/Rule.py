@@ -112,8 +112,7 @@ class Rule:
             raise ValueError("No rule statements found for rule")
             
     def evaluateIF(self, logic):
-        #Get the value
-        value = int(logic[3])
+        
         
         #get the variable
         var = None
@@ -134,7 +133,8 @@ class Rule:
                 var = self.hand[0].getValues()[0]
         else:
             raise ValueError("Unknown variable type encountered in rule")
-            
+        #Get the value once we know it isnt soft
+        value = int(logic[3])
         #Get the operation and evaluate
         if logic[2] == CHECK_EQUALS:
             return var == value

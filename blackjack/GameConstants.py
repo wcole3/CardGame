@@ -8,7 +8,7 @@ Constants for the game, eventually this should be moved to a file or something
 """
 
 #Debug flag
-DEBUG = True
+DEBUG = False
 
 #Rule statics
 MAX_SCORE = 21
