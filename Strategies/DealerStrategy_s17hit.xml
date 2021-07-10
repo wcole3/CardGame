@@ -1,0 +1,13 @@
+<Strategy name="Dealer">
+	<Rules>
+		<Rule true_action="HIT" false_action="NEXTRULE">
+			<Logic operation="AND">
+				<Logic operation="IF" var="SOFT"/>
+				<Logic operation="IF" var="SCORE" check="eq" value="17"/>				
+			</Logic>
+		</Rule>
+		<Rule true_action="HIT" false_action="STAND">
+			<Logic operation="IF" var="SCORE" check="lt" value='17'/>
+		</Rule>
+	</Rules>
+</Strategy>

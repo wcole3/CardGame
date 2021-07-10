@@ -14,6 +14,10 @@
 								<Logic operation="IF" var="PAIR" check="eq" value="9"/>
 								<Logic operation="IF" var="DEALERSHOWN" check="eq" value="7"/>				
 							</Logic>
+							<Logic operation="AND">
+								<Logic operation="IF" var="PAIR" check="eq" value="8"/>
+								<Logic operation="IF" var="DEALERSHOWN" check="eq" value="11"/>				
+							</Logic>
 						</Logic>
 					</Logic>
 				</Logic>
@@ -39,19 +43,8 @@
 		<Rule true_action="SURRENDER" false_action="NEXTRULE">
 			<Logic operation="OR">
 				<Logic operation="AND">
-					<Logic operation="NOT">
-						<Logic operation="IF" var="SOFT"/>
-					</Logic>
-					<Logic operation="IF" var="SCORE" check="eq" value="16"/>
-					<Logic operation="IF" var="DEALERSHOWN" check="gte" value="9"/>
-					<Logic operation="IF" var="DEALERSHOWN" check="lte" value="11"/>
-				</Logic>
-				<Logic operation="AND">
-					<Logic operation="NOT">
-						<Logic operation="IF" var="SOFT"/>
-					</Logic>
-					<Logic operation="IF" var="SCORE" check="eq" value="15"/>
-					<Logic operation="IF" var="DEALERSHOWN" check="eq" value="10"/>
+					<Logic operation="IF" var="PAIR" check="eq" value="8"/>
+					<Logic operation="IF" var="DEALERSHOWN" check="eq" value="11"/>				
 				</Logic>
 				<Logic operation="AND">
 					<Logic operation="NOT">
@@ -66,7 +59,14 @@
 						<Logic operation="IF" var="SOFT"/>
 					</Logic>
 					<Logic operation="IF" var="SCORE" check="eq" value="15"/>
-					<Logic operation="IF" var="DEALERSHOWN" check="eq" value="10"/>
+					<Logic operation="IF" var="DEALERSHOWN" check="gte" value="10"/>
+				</Logic>
+				<Logic operation="AND">
+					<Logic operation="NOT">
+						<Logic operation="IF" var="SOFT"/>
+					</Logic>
+					<Logic operation="IF" var="SCORE" check="eq" value="17"/>
+					<Logic operation="IF" var="DEALERSHOWN" check="eq" value="11"/>
 				</Logic>
 			</Logic>
 		</Rule>
@@ -93,8 +93,12 @@
 				<Logic operation="AND">
 					<Logic operation="IF" var="SOFT"/>
 					<Logic operation="IF" var="SCORE" check="eq" value="18"/>
-					<Logic operation="IF" var="DEALERSHOWN" check="gte" value="3"/>
 					<Logic operation="IF" var="DEALERSHOWN" check="lte" value="6"/>
+				</Logic>
+				<Logic operation="AND">
+					<Logic operation="IF" var="SOFT"/>
+					<Logic operation="IF" var="SCORE" check="eq" value="19"/>
+					<Logic operation="IF" var="DEALERSHOWN" check="eq" value="6"/>
 				</Logic>
 				<Logic operation="AND">
 					<Logic operation="NOT">
@@ -118,7 +122,7 @@
 						<Logic operation="IF" var="SOFT"/>
 					</Logic>
 					<Logic operation="IF" var="SCORE" check="eq" value="11"/>
-					<Logic operation="IF" var="DEALERSHOWN" check="eq" value="10"/>
+					<Logic operation="IF" var="DEALERSHOWN" check="gte" value="10"/>
 				</Logic>
 			</Logic>
 		</Rule>
@@ -138,7 +142,7 @@
 				</Logic>
 				<Logic operation="AND">
 					<Logic operation="IF" var="SOFT"/>
-					<Logic operation="IF" var="SCORE" check="eq" value="18"/>
+					<Logic operation="IF" var="SCORE" check="gte" value="18"/>
 					<Logic operation="IF" var="DEALERSHOWN" check="lte" value="8"/>
 				</Logic>
 				<Logic operation="AND">

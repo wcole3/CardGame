@@ -103,6 +103,8 @@ class Strategy:
             elif action == Rule.ACTION_NEXTRULE:
                 ruleNo += 1
                 return self.getPlayFromRules(ruleNo)
+            else:
+                raise ValueError("Unknown action requested: " + str(action))
         
     def parseRuleFile(self, file):
         self.rules = []

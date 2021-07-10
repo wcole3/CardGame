@@ -107,7 +107,7 @@ class Rule:
                         return True
                 return False
             elif op == LOGIC_NOT:
-                return False if self.evaluateIF(rules[1]) else True
+                return False if self.evaluateRule(rules[1]) else True
         else:
             raise ValueError("No rule statements found for rule")
             
@@ -132,7 +132,7 @@ class Rule:
             else:
                 var = self.hand[0].getValues()[0]
         else:
-            raise ValueError("Unknown variable type encountered in rule")
+            raise ValueError("Unknown variable type encountered in rule: " + str(logic[1]))
         #Get the value once we know it isnt soft
         value = int(logic[3])
         #Get the operation and evaluate
@@ -147,6 +147,6 @@ class Rule:
         elif logic[2] == CHECK_LESSTHANEQ:
             return var <= value
         else:
-            raise ValueError("Unknown check encountered in rule")
+            raise ValueError("Unknown check encountered in rule: " + str(logic[2]))
         
             
