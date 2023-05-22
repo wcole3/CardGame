@@ -7,7 +7,8 @@ Test case for Strategy
 @author: Wellb_000
 """
 import sys
-sys.path.insert(0,'..')#hack it
+
+sys.path.insert(0, "..")  # hack it
 import unittest
 import CardGameUtils as utils
 import GameConstants as gc
@@ -17,12 +18,11 @@ from Strategy import Strategy
 
 
 class testStrategy(unittest.TestCase):
-    
     def testDealerStrategy(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/DealerStrategy.xml")
-        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
+        hand = [deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.HIT)
         self.assertEqual(score, 16)
@@ -34,36 +34,37 @@ class testStrategy(unittest.TestCase):
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.BUST)
         self.assertEqual(strat.getScore(), 0)
-        
+
     def testSurrenderStrategy(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/TestStrategySurrender.xml")
-        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
+        hand = [deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.SURRENDER)
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"), True)
         self.assertEqual(action, gc.BUST)
-        
+
     def testSplitStrategy(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/TestStrategySplit.xml")
-        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
+        hand = [deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.STAND)
-        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Six")]
+        hand = [deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Six")]
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.STAND)
-        hand =[deck.getCard("Clubs", "Eight"), deck.getCard("Diamonds", "Eight")]
+        hand = [deck.getCard("Clubs", "Eight"), deck.getCard("Diamonds", "Eight")]
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.SPLIT)
-        hand =[deck.getCard("Clubs", "Ace"), deck.getCard("Diamonds", "Ace")]
+        hand = [deck.getCard("Clubs", "Ace"), deck.getCard("Diamonds", "Ace")]
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.SPLIT)
         hand.append(deck.getCard("Spades", "Two"))
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.STAND)
-        
+
+
 if __name__ == "__main__":
     unittest.main()

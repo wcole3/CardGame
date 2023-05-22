@@ -16,12 +16,13 @@ import configparser as cp
 
 DEBUG = gc.DEBUG
 
+
 def getDeckFromXML(xmlFile):
-    #check if file exists
-    if(os.path.exists(xmlFile)):
+    # check if file exists
+    if os.path.exists(xmlFile):
         suites = []
         nameValDict = {}
-        #load the suites, names, and values
+        # load the suites, names, and values
         tree = ET.parse(xmlFile)
         rootEle = tree.getroot()
         suiteEle = rootEle.find("Suites")
@@ -35,17 +36,19 @@ def getDeckFromXML(xmlFile):
                 values = []
                 for value in ele:
                     values.append(float(value.text))
-                nameValDict.update({name : values})
+                nameValDict.update({name: values})
         return suites, nameValDict
     else:
         raise FileNotFoundError("Deck xml file not found at path: " + xmlFile)
-        
-def getHandValues(hand : list = []):
+
+
+def getHandValues(hand: list = []):
     cardValues = []
     for card in hand:
         cardValues.append(card.getValues())
     combs = list(it.product(*cardValues))
-    if(DEBUG): print(combs)
+    if DEBUG:
+        print(combs)
     scores = []
     softList = []
     for o in combs:
@@ -56,14 +59,15 @@ def getHandValues(hand : list = []):
             softList.append(False)
     return scores, softList
 
-def parseConfig(file : str):
+
+def parseConfig(file: str):
     conf = cp.ConfigParser()
     conf.read(file)
     for key in conf:
-        if DEBUG: print(key)
+        if DEBUG:
+            print(key)
     return conf
 
-def getAllConfigFiles(path : str):
+
+def getAllConfigFiles(path: str):
     return [file for file in os.listdir(path) if file.endswith(".txt")]
-        
-            

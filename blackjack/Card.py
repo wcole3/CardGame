@@ -10,10 +10,10 @@ A card should have suite and value
 @author: wcole
 """
 
+
 class Card:
-    
-    def __init__(self, values : list, suite : str, name : str):
-        '''
+    def __init__(self, values: list, suite: str, name: str):
+        """
         Construct a card object
 
         Parameters
@@ -29,26 +29,24 @@ class Card:
         -------
         None.
 
-        '''
+        """
         self.values = values
         self.suite = suite
         self.name = name
         self.fullName = self.name + " of " + self.suite
-    
-    
+
     def getValues(self):
         try:
             self.values = sorted(self.values, key=int, reverse=True)
         except AttributeError:
             return self.values
         return self.values
-    
+
     def getSuite(self):
         return self.suite
-    
+
     def getName(self):
         return self.name
-    
+
     def getFullName(self):
         return self.fullName
-

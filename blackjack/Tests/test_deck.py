@@ -7,19 +7,19 @@ Unit test for deck class
 @author: William_Cole
 """
 import sys
-sys.path.insert(0,'..')
+
+sys.path.insert(0, "..")
 import unittest
 from Deck import Deck
 import CardGameUtils as utils
 
 
 class TestDeck(unittest.TestCase):
-    
     def testGetDeck(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
         self.assertEqual(deck.count(), 52)
-    
+
     def testDrawDiscard(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
@@ -30,7 +30,7 @@ class TestDeck(unittest.TestCase):
         for card in cards:
             deck.discard(card)
         self.assertEqual(deck.count(), 52)
-        
+
     def testGetCard(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
@@ -38,7 +38,7 @@ class TestDeck(unittest.TestCase):
         self.assertEqual(card1.getFullName(), "Two of Clubs")
         card2 = deck.getCard("Bubbles", "Three")
         self.assertEqual(card2, None)
-        
-        
+
+
 if __name__ == "__main__":
     unittest.main()

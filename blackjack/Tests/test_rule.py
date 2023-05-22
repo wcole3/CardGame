@@ -7,7 +7,8 @@ Test case for Rule class
 @author: William_Cole
 """
 import sys
-sys.path.insert(0,'..')#hack it
+
+sys.path.insert(0, "..")  # hack it
 import unittest
 import CardGameUtils as utils
 import GameConstants as gc
@@ -16,8 +17,8 @@ from Card import Card
 import Rule
 from Strategy import Strategy
 
+
 class testRule(unittest.TestCase):
-    
     def testDealerRule(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
@@ -30,9 +31,9 @@ class testRule(unittest.TestCase):
         self.assertEqual(len(logic), 4)
         self.assertEqual(logic[0], Rule.LOGIC_IF)
         self.assertEqual(logic[1], Rule.VAR_SCORE)
-        self.assertEqual(logic[2], 'lt')
+        self.assertEqual(logic[2], "lt")
         self.assertEqual(int(logic[3]), 17)
-        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
+        hand = [deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Queen")]
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.HIT)
         self.assertEqual(strat.getScore(), 16)
@@ -44,14 +45,14 @@ class testRule(unittest.TestCase):
         action, score = strat.getPlay(hand, hand, Card([1], "Hearts", "Ace"))
         self.assertEqual(action, gc.BUST)
         self.assertEqual(strat.getScore(), 0)
-        
+
     def testStratOne(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/TestStrategy1.xml")
         self.assertEqual(len(strat.rules), 2)
         dealerCard = deck.getCard("Hearts", "Ace")
-        hand =[deck.getCard("Clubs", "Two"), deck.getCard("Spades", "Two")]
+        hand = [deck.getCard("Clubs", "Two"), deck.getCard("Spades", "Two")]
         action, score = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.DOUBLEDOWN)
         hand.append(deck.getCard("Diamonds", "Seven"))
@@ -66,15 +67,16 @@ class testRule(unittest.TestCase):
         hand.append(deck.getCard("Hearts", "Three"))
         action, score = strat.getPlay(hand, hand, dealerCard)
         self.assertEqual(action, gc.STAND)
-        
+
     def testSoft(self):
         suites, namevals = utils.getDeckFromXML("../../Decks/TradDeck.xml")
         deck = Deck(suites, namevals)
         strat = Strategy("../../Strategies/DealerStrategy.xml")
-        hand =[deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Ace")]
+        hand = [deck.getCard("Clubs", "Six"), deck.getCard("Diamonds", "Ace")]
         action, score = strat.getPlay(hand, hand, deck.getCard("Diamonds", "Queen"))
         self.assertEqual(action, gc.STAND)
         self.assertEqual(strat.soft, True)
-        
+
+
 if __name__ == "__main__":
     unittest.main()

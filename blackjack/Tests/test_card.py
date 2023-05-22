@@ -8,8 +8,10 @@ Test cases for Card object
 """
 import sys
 import unittest
-sys.path.insert(0,'..')
+
+sys.path.insert(0, "..")
 from Card import Card
+
 
 class testCard(unittest.TestCase):
     def testCardName(self):
@@ -17,13 +19,13 @@ class testCard(unittest.TestCase):
         self.assertEqual(card.getName(), "Two")
         self.assertEqual(card.getSuite(), "Clubs")
         self.assertEqual(card.getFullName(), "Two of Clubs")
-    
+
     def testCardValue(self):
         card = Card([2, 4, 6], "Clubs", "Two")
         self.assertEqual(card.getValues(), [6, 4, 2])
         card = Card([2], "", "")
         self.assertEqual(card.getValues(), [2])
 
+
 if __name__ == "__main__":
     unittest.main()
-    
