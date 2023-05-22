@@ -13,14 +13,14 @@ import GameConstants as gc
 import xml.etree.ElementTree as ET
 import random
 import os
+import Rule
 
 from Card import Card
-import Rule
 
 DEBUG = gc.DEBUG
 
 class Strategy:
-    #The idea is to have this be a series of logical statements whcih control
+    #The idea is to have this be a series of logical statements which control
     #how a player would play.
     #For example, in blackjack the dealer strategy would be to hit until >=17,
     #then stand.
@@ -38,7 +38,7 @@ class Strategy:
         self.score = 0
         
         
-    def getPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None, surrender : bool = False):
+    def getPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None, surrender : bool = False) -> tuple[int, int]:
         #checks the current hand and known cards against the rules
         if(DEBUG): print("Current Hand: " + str([card.getFullName() for card in hand]))
         if(DEBUG): print("Boardstate: " + str([card.getFullName() for card in knownCards]))
@@ -66,7 +66,7 @@ class Strategy:
         return 0
         
     #gets the max value of the hand below max score or BUST
-    def getValue(self, hand : list = []):
+    def getValue(self, hand : list = []) -> tuple[int, bool]:
         handVals, soft = util.getHandValues(hand)
         scores = sorted(zip(handVals, soft), key=lambda pair : pair[0], reverse=True)
         if(DEBUG): print(scores)
@@ -76,16 +76,16 @@ class Strategy:
         #all scores bust
         return (gc.BUST, False)
     
-    def getScore(self):
+    def getScore(self) -> int:
         return self.score
     
-    def getDealerPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None):
+    def getDealerPlay(self, hand : list = [], knownCards : list=[], dealerCard : Card = None) -> int:
         if self.score < 17:
             return gc.HIT
         else:
             return gc.STAND
         
-    def getPlayFromRules(self, ruleNo : int):
+    def getPlayFromRules(self, ruleNo : int) -> int:
         if self.rules is None or len(self.rules) == 0 or ruleNo >= len(self.rules):
             return gc.STAND
         else:

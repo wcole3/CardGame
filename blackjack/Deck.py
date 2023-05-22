@@ -9,7 +9,7 @@ of each name suite combo defined in input xml.
 @author: wcole
 """
 
-import Card
+from Card import Card
 import random
 import GameConstants as gc
 from collections import deque
@@ -25,7 +25,7 @@ class Deck:
         for i in range(0, numberOfDecks):
             for suite in suites:
                 for name, val in nameVal.items():
-                    card = Card.Card(val, suite, name)
+                    card = Card(val, suite, name)
                     self.cards.append(card)
         if gc.DEBUG: print("Size of deck: ", len(self.cards))
         

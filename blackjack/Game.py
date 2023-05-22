@@ -54,9 +54,11 @@ def setupPlayers(strats : [], betSizes : list = [], names : list = []):
     return [Player(names[i], [], strats[i], betSizes[i]) for i in range(len(strats))]
     
 def dealOpeningHands(players : list = [], dealer : Player = None, deck : Deck = None):
+    global DEALER_SHOWN
     if deck.noOfDecks == 1: deck.shuffle()
     elif (deck.discarded/len(deck.cards)) >= gc.SHUFFLE_POINT: deck.shuffle() 
-    #deal opening hands
+    #deal opening hands; technically I don;t need to emulate the 'way' cards are dealt
+    # All that matters is two cards are randomly dealt to each player and the dealer
     for i in range(2):
         for player in players:
             card = deck.drawCard()
@@ -66,7 +68,6 @@ def dealOpeningHands(players : list = [], dealer : Player = None, deck : Deck = 
         dealer.drawCard(card)
         if i != 0:
             KNOWNCARDS.append(card)
-            global DEALER_SHOWN
             DEALER_SHOWN = card
             
 def getResults(players : list, dealer : Player):
@@ -79,7 +80,7 @@ def getResults(players : list, dealer : Player):
         while handNo < len(player.hands):
             score = player.getScore(handNo)
             if(DEBUG): print(player.name, "hand #: ", handNo, " score: ", score)
-            if score > 0:#player loses regardless
+            if score > 0:
                 if score == dealer.getScore():
                     #special check for natural dealer blackjack
                     if dealer.getScore() == 21 and len(dealer.hands[0]) == 2:
@@ -105,6 +106,7 @@ def getResults(players : list, dealer : Player):
                     player.lose()
                     winnings -= player.bets[handNo]
             else:
+                #player loses regardless
                 player.lose()
                 winnings -= player.bets[handNo]
             handNo += 1

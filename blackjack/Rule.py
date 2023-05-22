@@ -7,7 +7,6 @@ Object repr of rule from xml file
 @author: Wellb_000
 """
 
-import xml.etree.ElementTree as ET
 import GameConstants as gc
 from Card import Card
 
@@ -56,7 +55,7 @@ class Rule:
         else:
             raise ValueError("Rule cannot be constructed from None-type object")
             
-    def parseLogic(self, element):
+    def parseLogic(self, element) -> list:
         #figure out which logic operation
         attrs = []
         op = element.get(ATTR_operation)
@@ -98,22 +97,22 @@ class Rule:
                 return self.evaluateIF(rules)
             elif op == LOGIC_AND:
                 for rule in rules[1]:
-                    if self.evaluateRule(rule) is False:
+                    # early return if any rule is false
+                    if self.evaluateRule(rule) == False:
                         return False
                 return True
             elif op == LOGIC_OR:
                 for rule in rules[1]:
-                    if self.evaluateRule(rule) is True:
+                    # early return if any rule is true
+                    if self.evaluateRule(rule):
                         return True
                 return False
             elif op == LOGIC_NOT:
-                return False if self.evaluateRule(rules[1]) else True
+                return not self.evaluateRule(rules[1])
         else:
             raise ValueError("No rule statements found for rule")
             
     def evaluateIF(self, logic):
-        
-        
         #get the variable
         var = None
         if logic[1] == VAR_SCORE:
