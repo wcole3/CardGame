@@ -82,10 +82,7 @@ class Player:
         # self.winningsHistory.append((self.bank, self.getScore(handNo)))
 
     def roundEnd(self, betSize: float = 0.0):
-        cards = []
-        for hand in self.hands:
-            for card in hand:
-                cards.append(card)
+        cards = [card for hand in self.hands for card in hand]
         self.winningsHistory.append((self.bank, self.roundHandStr))
         self.roundHandStr = ""
         self.hands = [[]]

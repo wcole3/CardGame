@@ -170,6 +170,7 @@ def getPlays(player: Player, deck: Deck):
                     KNOWNCARDS.append(card2)
                 else:
                     # Cant split get last false action
+                    # TODO is this correct?
                     player.play(handNo)
                     playing = False
             else:
